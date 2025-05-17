@@ -63,6 +63,7 @@ Output Format
   - Basic: `Question ; Answer ; [article title]`
 - Only output formatted cards. No explanations or summaries.
 
+
 Article Content:
 """
 
@@ -94,6 +95,8 @@ def split_cards(generated_text):
             continue
 
         if current_section == "cloze":
+            if line[0] == "-":
+                line = line[1:].strip()
             cloze_cards.append(line)
         elif current_section == "basic":
             basic_cards.append(line)
