@@ -1,16 +1,5 @@
-Imagine reaching into an urn that contains {c1::seventy white balls} and {c2::thirty red ones}, and plucking out {c3::ten mystery balls}; ; Biases: An Introduction
-This random error is the cost of {c1::incomplete knowledge}, and as errors go, it’s not so bad.; ; Biases: An Introduction
-On the other hand, suppose that the white balls are heavier, and {c1::sink to the bottom} of the urn.; ; Biases: An Introduction
-That kind of error is called {c1::statistical bias}.; ; Biases: An Introduction
-When your method of learning about the world is biased, {c1::learning more may not help}.; ; Biases: An Introduction
-Acquiring more data can even {c1::consistently worsen} a biased prediction.; ; Biases: An Introduction
-A cognitive bias is a {c1::systematic error} in how we think; ; Biases: An Introduction
-Cognitive biases can {c1::distort our view of reality}; ; Biases: An Introduction
-Base rate neglect involves grounding judgments in how well characteristics {c1::feel like they fit together}, neglecting {c2::how common each characteristic is}.; ; Biases: An Introduction
-Another example of a cognitive bias is the {c1::sunk cost fallacy} —people’s tendency to feel committed to things they’ve spent resources on.; ; Biases: An Introduction
-Even when we correctly identify others’ biases, we exhibit a {c1::bias blind spot} when it comes to our own flaws.; ; Biases: An Introduction
-Subjects can reduce base rate neglect by thinking of probabilities as {c1::frequencies of objects or events}.; ; Biases: An Introduction
-It’s necessary to distinguish between {c1::experience} and {c2::expertise}.; ; Biases: An Introduction
-Expertise requires understanding the {c1::underlying rationale} of the respective bias.; ; Biases: An Introduction
-The goal of this book is to lay the groundwork for creating rationality {c1::“expertise”}.; ; Biases: An Introduction
-Humans aren’t rational; but, as behavioral economist {c1::Dan Ariely} notes, we’re {c2::predictably irrational}.; ; Biases: An Introduction
+- {c1::Statistical bias} occurs when learning methods produce errors in a consistent direction, unlike random errors which average out. ; ; [Biases: An Introduction]
+- {c1::Cognitive bias} refers to systematic errors in thinking that skew our perception of reality, similar to {c2::statistical bias} in data. ; ; [Biases: An Introduction]
+- Recognizing and overcoming biases requires more than familiarity; it requires a {c1::deep understanding} of the bias's rationale and the tools to counteract it. ; ; [Biases: An Introduction]
+- Base rate neglect is a cognitive bias where judgments are based on {c1::characteristic fit} rather than {c2::population commonality}. ; ; [Biases: An Introduction]
+- Bias blind spot is the tendency to detect biases in others but not in {c1::ourselves}, often leading to an overestimation of one's {c2::objectivity}. ; ; [Biases: An Introduction]

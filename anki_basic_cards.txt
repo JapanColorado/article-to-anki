@@ -1,4 +1,4 @@
-What is statistical bias? ; A consistent error in one direction in a sample that skews the results. ; Biases: An Introduction
-What is cognitive bias? ; A systematic error in thinking that skews our perception and decision-making. ; Biases: An Introduction
-What is base rate neglect? ; Ignoring the actual statistical likelihood of an event in favor of how well a scenario fits a stereotype. ; Biases: An Introduction
-What is the sunk cost fallacy? ; The tendency to continue investing in a losing proposition because of past investments. ; Biases: An Introduction
+- What is statistical bias? ; Errors in data collection that produce consistent directional errors. ; [Biases: An Introduction]
+- Define cognitive bias. ; Systematic errors in thinking that distort reality. ; [Biases: An Introduction]
+- What is base rate neglect? ; Ignoring statistical commonality in favor of how well characteristics fit together. ; [Biases: An Introduction]
+- What does bias blind spot refer to? ; The inability to see one's own biases while identifying them in others. ; [Biases: An Introduction]

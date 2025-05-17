@@ -37,18 +37,31 @@ def fetch_article_text(url):
 
 def generate_anki_cards(article_text, url, title):
     prompt = f"""
-You're a spaced repetition tutor creating Anki flashcards from the article below. Extract the most important ideas, definitions, and principles someone would want to remember long-term.
+You're a spaced repetition tutor creating Anki flashcards from a rationalist article.
 
-Generate many cloze deletions per key sentence — roughly one every 5–10 words — but prioritize meaningful content over spacing. Cloze deletions should be short and precise: just a key word or short phrase (1–5 words). You may include multiple cloze deletions per sentence if it's dense (e.g., {{c1::term}} and {{c2::related concept}}). Favor technical terms, definitions, biases, named fallacies, ratios, contrasts, and principle statements.
+Your task is to extract two types of flashcards:
 
-Also include 2–4 front-back cards for facts that don’t work well as clozes.
+Cloze Cards
+- Identify the **main argument** of the article and its **key supporting claims**.
+- Rewrite or summarize these into clear, assertive sentences.
+- Turn these into cloze deletions targeting key concepts, terms, causes, or distinctions.
+- Use multiple clozes per sentence if needed (e.g., {{c1::term}} and {{c2::contrast}}).
+- Do **not** include illustrative examples, metaphors, quotes, or trivia — only the core structure of the article's reasoning.
+- Be concise and precise: each cloze should be 1–5 words and essential for understanding the idea.
 
-Use semicolons to separate fields. Only output properly formatted cards, no explanations or preamble.
+Basic Cards
+- Extract **definitions, key terms, distinctions, or clear cause-effect relationships**.
+- Format as simple front–back cards.
+- Prioritize concepts the author defines or builds on.
+- Avoid filler, vague rephrasings, or trivia.
 
-Cloze format: {{c1::clozed text}} ; ; [article title]
-Front-back format: Question ; Answer ; [article title]
-
-Begin your output with the section label CLOZE, then BASIC.
+Output Format
+- Begin with the line CLOZE, then list the cloze cards.
+- Then write BASIC, and list the basic cards.
+- Format each card with semicolons:
+  - Cloze: `{{c1::clozed phrase}} ; ; [article title]`
+  - Basic: `Question ; Answer ; [article title]`
+- Only output formatted cards. No explanations or summaries.
 
 Article Content:
 """
