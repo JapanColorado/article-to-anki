@@ -1,4 +1,4 @@
-1. What is statistical bias? ; Statistical bias is when a sample is unrepresentative in a consistent direction. ; Biases: An Introduction
-2. What is cognitive bias? ; A systematic error in how we think, leading to less accurate or reliable conclusions. ; Biases: An Introduction
-3. What is base rate neglect? ; Ignoring the general frequency of characteristics in the population when making judgments. ; Biases: An Introduction
-4. What does the sunk cost fallacy describe? ; The tendency to remain committed to a decision based on previously invested resources. ; Biases: An Introduction
+What is statistical bias? ; A consistent error in one direction in a sample that skews the results. ; Biases: An Introduction
+What is cognitive bias? ; A systematic error in thinking that skews our perception and decision-making. ; Biases: An Introduction
+What is base rate neglect? ; Ignoring the actual statistical likelihood of an event in favor of how well a scenario fits a stereotype. ; Biases: An Introduction
+What is the sunk cost fallacy? ; The tendency to continue investing in a losing proposition because of past investments. ; Biases: An Introduction

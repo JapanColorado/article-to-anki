@@ -1,13 +1,16 @@
-1. Imagine reaching into an urn that contains {c1::seventy white balls and thirty red ones}, and plucking out ten mystery balls. ; ; Biases: An Introduction
-2. Random error is the cost of {c2::incomplete knowledge}, and as errors go, it’s not so bad. ; ; Biases: An Introduction
-3. Your estimates won’t be incorrect on average, and the more you learn, the {c3::smaller your error} will tend to be. ; ; Biases: An Introduction
-4. Statistical bias occurs when your sample may be {c4::unrepresentative in a consistent direction}. ; ; Biases: An Introduction
-5. Acquiring more data can even consistently {c5::worsen a biased prediction}. ; ; Biases: An Introduction
-6. A cognitive bias is a {c6::systematic error in how we think}, as opposed to a random error. ; ; Biases: An Introduction
-7. Cognitive biases skew our thinking so that it {c7::less accurately tracks the truth}. ; ; Biases: An Introduction
-8. Even when we correctly identify others’ biases, we exhibit a {c8::bias blind spot} when it comes to our own flaws. ; ; Biases: An Introduction
-9. Base rate neglect involves neglecting how {c9::common each characteristic is} in the population at large. ; ; Biases: An Introduction
-10. The sunk cost fallacy is people’s tendency to feel {c10::committed to things they’ve spent resources on}. ; ; Biases: An Introduction
-11. The goal of this book is to lay the groundwork for creating {c11::rationality “expertise”}. ; ; Biases: An Introduction
-12. The philosopher Alfred Korzybski once wrote: “{c12::A map is not the territory it represents}.” ; ; Biases: An Introduction
-13. Humans aren’t rational; but, as behavioral economist Dan Ariely notes, we’re {c13::predictably irrational}. ; ; Biases: An Introduction
+Imagine reaching into an urn that contains {c1::seventy white balls} and {c2::thirty red ones}, and plucking out {c3::ten mystery balls}; ; Biases: An Introduction
+This random error is the cost of {c1::incomplete knowledge}, and as errors go, it’s not so bad.; ; Biases: An Introduction
+On the other hand, suppose that the white balls are heavier, and {c1::sink to the bottom} of the urn.; ; Biases: An Introduction
+That kind of error is called {c1::statistical bias}.; ; Biases: An Introduction
+When your method of learning about the world is biased, {c1::learning more may not help}.; ; Biases: An Introduction
+Acquiring more data can even {c1::consistently worsen} a biased prediction.; ; Biases: An Introduction
+A cognitive bias is a {c1::systematic error} in how we think; ; Biases: An Introduction
+Cognitive biases can {c1::distort our view of reality}; ; Biases: An Introduction
+Base rate neglect involves grounding judgments in how well characteristics {c1::feel like they fit together}, neglecting {c2::how common each characteristic is}.; ; Biases: An Introduction
+Another example of a cognitive bias is the {c1::sunk cost fallacy} —people’s tendency to feel committed to things they’ve spent resources on.; ; Biases: An Introduction
+Even when we correctly identify others’ biases, we exhibit a {c1::bias blind spot} when it comes to our own flaws.; ; Biases: An Introduction
+Subjects can reduce base rate neglect by thinking of probabilities as {c1::frequencies of objects or events}.; ; Biases: An Introduction
+It’s necessary to distinguish between {c1::experience} and {c2::expertise}.; ; Biases: An Introduction
+Expertise requires understanding the {c1::underlying rationale} of the respective bias.; ; Biases: An Introduction
+The goal of this book is to lay the groundwork for creating rationality {c1::“expertise”}.; ; Biases: An Introduction
+Humans aren’t rational; but, as behavioral economist {c1::Dan Ariely} notes, we’re {c2::predictably irrational}.; ; Biases: An Introduction

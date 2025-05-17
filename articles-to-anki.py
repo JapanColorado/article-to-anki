@@ -37,18 +37,18 @@ def fetch_article_text(url):
 
 def generate_anki_cards(article_text, url, title):
     prompt = f"""
-You're a spaced repetition tutor. Given the following article content from {url}, extract up to {CARDS_PER_ARTICLE} high-quality Anki flashcards.
-Focus on the most important concepts, definitions, and facts. Don't include any extraneous information or examples.
+You're a spaced repetition tutor creating Anki flashcards from the article below. Extract the most important ideas, definitions, and principles someone would want to remember long-term.
 
-1. Generate many cloze deletions per sentence such that there is one around every 7-10 words. Use the format: {{c(cloze number)::text}}
-2. Also generate a small number of normal front-back cards.
-3. Separate the two types clearly in your response: label one section "CLOZE" and the other "BASIC"
-4. Use semicolons (`;`) to separate fields in each card.
-5. Include the article title as the third field for every card.
+Generate many cloze deletions per key sentence — roughly one every 5–10 words — but prioritize meaningful content over spacing. Cloze deletions should be short and precise: just a key word or short phrase (1–5 words). You may include multiple cloze deletions per sentence if it's dense (e.g., {{c1::term}} and {{c2::related concept}}). Favor technical terms, definitions, biases, named fallacies, ratios, contrasts, and principle statements.
 
-Only output formatted cards in plain text:
-- Cloze: `[text with cloze deletions] ; [leave blank] ; [title]`
-- Basic: `Front ; Back ; [title]`
+Also include 2–4 front-back cards for facts that don’t work well as clozes.
+
+Use semicolons to separate fields. Only output properly formatted cards, no explanations or preamble.
+
+Cloze format: {{c1::clozed text}} ; ; [article title]
+Front-back format: Question ; Answer ; [article title]
+
+Begin your output with the section label CLOZE, then BASIC.
 
 Article Content:
 """
