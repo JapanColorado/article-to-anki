@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import time
 import os
 import re
-
+#TODO: Have copilot revise and prettify the code
 # === CONFIGURATION ===
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "sk-..."
 MODEL = "gpt-4o"
@@ -92,20 +92,22 @@ def split_cards(generated_text):
 
     for line in generated_text.splitlines():
         line = line.strip()
-        if line[0] == "-":
-            line = line[1:].strip()
+
         if not line:
             continue
+        if line[0] == "-":
+            line = line[1:].strip()
         if line.upper().startswith("CLOZE"):
             current_section = "cloze"
             continue
         if line.upper().startswith("BASIC"):
             current_section = "basic"
             continue
-
-        if current_section == "cloze":
-            if line[0] == "-":
+        
+        if line[0] == "-":
                 line = line[1:].strip()
+        if current_section == "cloze":
+            
             cloze_cards.append(line)
         elif current_section == "basic":
             basic_cards.append(line)
