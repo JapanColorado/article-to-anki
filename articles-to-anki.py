@@ -6,18 +6,18 @@ from urllib.parse import urlparse
 import time
 import os
 import re
-#TODO: Have copilot revise and prettify the code
+import json
+import requests as req  # to distinguish from openai
+
 # === CONFIGURATION ===
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or "sk-..."
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANKI_CONNECT_URL = "http://localhost:8765"
 MODEL = "gpt-4o"
 ARTICLES_FILE = "articles.txt"
-OUTPUT_CLOZE_FILE = "anki_cloze_cards.txt"
-OUTPUT_BASIC_FILE = "anki_basic_cards.txt"
 CARDS_PER_ARTICLE = 20
-
+DECK_NAME = "Spellbook"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
-
 
 def fetch_article_text(url):
     print(f"Fetching: {url}")
@@ -27,7 +27,6 @@ def fetch_article_text(url):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Strip scripts and styles
         for tag in soup(["script", "style", "noscript"]):
             tag.decompose()
 
@@ -37,10 +36,9 @@ def fetch_article_text(url):
         print(f"Error fetching article: {e}")
         return "", url
 
-
-def generate_anki_cards(article_text, url, title):
+def generate_anki_cards(article_text):
     prompt = """
-You're a spaced repetition tutor creating Anki flashcards from a rationalist article.
+You're a spaced repetition tutor creating Anki flashcards from an article the user provides.
 
 Your task is to extract two types of flashcards:
 
@@ -66,24 +64,19 @@ Output Format
   - Basic: `Question ; Answer ; [article title]`
 - Only output formatted cards. No explanations or summaries.
 
-
 Article Content:
 """
 
     response = client.chat.completions.create(
         model=MODEL,
         messages=[
-            {
-                "role": "system",
-                "content": "You generate high-quality Anki cards from articles.",
-            },
+            {"role": "system", "content": "You generate high-quality Anki cards from articles."},
             {"role": "user", "content": prompt + article_text},
         ],
         temperature=0.7,
     )
 
     return response.choices[0].message.content.strip()
-
 
 def split_cards(generated_text):
     cloze_cards = []
@@ -92,10 +85,9 @@ def split_cards(generated_text):
 
     for line in generated_text.splitlines():
         line = line.strip()
-
         if not line:
             continue
-        if line[0] == "-":
+        if line.startswith("-"):
             line = line[1:].strip()
         if line.upper().startswith("CLOZE"):
             current_section = "cloze"
@@ -103,29 +95,39 @@ def split_cards(generated_text):
         if line.upper().startswith("BASIC"):
             current_section = "basic"
             continue
-        
-        if line[0] == "-":
-                line = line[1:].strip()
+
         if current_section == "cloze":
-            
             cloze_cards.append(line)
         elif current_section == "basic":
             basic_cards.append(line)
 
     return cloze_cards, basic_cards
 
+def add_to_anki(front, back, title, is_cloze):
+    note = {
+        "deckName": DECK_NAME,
+        "modelName": "Cloze Deletion with Source" if is_cloze else "Basic with Source",
+        "fields": {
+            "Text": front if is_cloze else front,
+            "Back": "" if is_cloze else back,
+        },
+        "tags": ["auto_generated", title.replace(" ", "_")],
+        "options": {
+            "allowDuplicate": False,
+        },
+    }
+    req.post(ANKI_CONNECT_URL, json={
+        "action": "addNote",
+        "version": 6,
+        "params": {"note": note}
+    })
 
 def main():
     if not OPENAI_API_KEY or OPENAI_API_KEY.startswith("sk-..."):
-        raise ValueError(
-            "Set your OpenAI API key in the OPENAI_API_KEY variable or as an environment variable."
-        )
+        raise ValueError("Set your OpenAI API key in the OPENAI_API_KEY variable or as an environment variable.")
 
     with open(ARTICLES_FILE, encoding="utf-8") as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-
-    all_cloze = []
-    all_basic = []
 
     for url in urls:
         article_text, title = fetch_article_text(url)
@@ -133,20 +135,21 @@ def main():
             continue
         raw_output = generate_anki_cards(article_text, url, title)
         cloze_cards, basic_cards = split_cards(raw_output)
-        all_cloze.extend(cloze_cards)
-        all_basic.extend(basic_cards)
-        time.sleep(1)  # polite rate limit
 
-    with open(OUTPUT_CLOZE_FILE, "w", encoding="utf-8") as f:
-        f.write("\n".join(all_cloze))
+        for card in cloze_cards:
+            front, _, _ = card.split(";")
+            add_to_anki(front.strip(), "", title, is_cloze=True)
 
-    with open(OUTPUT_BASIC_FILE, "w", encoding="utf-8") as f:
-        f.write("\n".join(all_basic))
+        for card in basic_cards:
+            try:
+                front, back, _ = card.split(";")
+                add_to_anki(front.strip(), back.strip(), title, is_cloze=False)
+            except ValueError:
+                continue  # Skip malformed basic cards
 
-    print(
-        f"Done. {len(all_cloze)} cloze cards and {len(all_basic)} basic cards saved to {OUTPUT_CLOZE_FILE} and {OUTPUT_BASIC_FILE}."
-    )
+        time.sleep(1)
 
+    print("All cards added to Anki via AnkiConnect.")
 
 if __name__ == "__main__":
     main()
