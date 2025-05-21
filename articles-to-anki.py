@@ -52,13 +52,7 @@ def fetch_article_text(url: str) -> Tuple[Optional[str], Optional[str]]:
 def generate_anki_cards(
     article_text: str, custom_instructions: Optional[str] = None
 ) -> str:
-    # Limit article_text to avoid exceeding token limits (e.g., 8000 chars ≈ 2000 tokens)
-    #MAX_CHARS = 8000
-    #if len(article_text) > MAX_CHARS:
-    #    article_text = article_text[:MAX_CHARS]
-    #    print(article_text)
-    #    article_text += "\n\n[Truncated due to length.]"
-
+    """Generates Anki cards using OpenAI's API."""
     base_prompt = """
 You're a spaced repetition tutor creating Anki flashcards from an article the user provides.
 
