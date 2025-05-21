@@ -1,0 +1,11 @@
+What is random error in the context of incomplete knowledge? ; Error caused by chance variation that decreases with more learning ; Biases: An Introduction — LessWrong
+Define statistical bias. ; Systematic error where a sample consistently misrepresents the population ; Biases: An Introduction — LessWrong
+What is cognitive bias? ; A systematic error in thinking that skews judgment away from truth or goals ; Biases: An Introduction — LessWrong
+What is base rate neglect? ; Ignoring the actual frequency of categories in a population when judging probabilities ; Biases: An Introduction — LessWrong
+What is the sunk cost fallacy? ; The tendency to continue investing in something due to past costs rather than future benefit ; Biases: An Introduction — LessWrong
+What is bias blindness? ; The inability to recognize one’s own cognitive biases even when aware of them in others ; Biases: An Introduction — LessWrong
+What is the bias blind spot? ; The tendency to see bias in others but not in oneself ; Biases: An Introduction — LessWrong
+How can debiasing be improved? ; By understanding why good reasoning works and how cognitive biases affect thinking ; Biases: An Introduction — LessWrong
+What distinguishes expertise in debiasing from mere experience? ; Having conceptual understanding to recognize and counteract biases, not just familiarity ; Biases: An Introduction — LessWrong
+What does "The map is not the territory" imply about beliefs? ; Beliefs are models or representations that may not perfectly match reality ; Biases: An Introduction — LessWrong
+Why are humans described as predictably irrational? ; Because they exhibit consistent patterns of systematic errors and reasoning failures ; Biases: An Introduction — LessWrong

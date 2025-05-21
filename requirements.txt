@@ -1,0 +1,4 @@
+openai
+requests
+tqdm
+beautifulsoup4

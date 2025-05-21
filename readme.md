@@ -7,4 +7,8 @@ A tool to convert articles into Anki flashcards automatically using ChatGPT.
 - Extracts key points and definitions from articles
 - Generates Anki-compatible plain-text files
 
-## TODO - Finish first version and make documentation!
+## TODO - Finish first version and make documentation
+
+## Wishlist/Ideas
+
+- Flag to have a second pass of the model refine/thin out the cards.
