@@ -1,20 +1,14 @@
-import openai
-from openai import OpenAI
+import os
+import time
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
-import time
-import os
-import re
-import json
-import requests as req  # to distinguish from openai
+from openai import OpenAI
 
 # === CONFIGURATION ===
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANKI_CONNECT_URL = "http://localhost:8765"
 MODEL = "gpt-4o"
 ARTICLES_FILE = "articles.txt"
-CARDS_PER_ARTICLE = 20
 DECK_NAME = "Spellbook"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -26,12 +20,10 @@ def fetch_article_text(url):
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
-
         for tag in soup(["script", "style", "noscript"]):
             tag.decompose()
-
         text = " ".join(soup.stripped_strings)
-        return text[:12000], soup.title.string.strip() if soup.title else url
+        return text[:12000], (soup.title.string.strip() if soup.title else url)
     except Exception as e:
         print(f"Error fetching article: {e}")
         return "", url
@@ -66,7 +58,6 @@ Output Format
 
 Article Content:
 """
-
     response = client.chat.completions.create(
         model=MODEL,
         messages=[
@@ -75,32 +66,25 @@ Article Content:
         ],
         temperature=0.7,
     )
-
     return response.choices[0].message.content.strip()
 
 def split_cards(generated_text):
-    cloze_cards = []
-    basic_cards = []
+    cloze_cards, basic_cards = [], []
     current_section = None
-
     for line in generated_text.splitlines():
         line = line.strip()
         if not line:
             continue
-        if line.startswith("-"):
-            line = line[1:].strip()
         if line.upper().startswith("CLOZE"):
             current_section = "cloze"
             continue
         if line.upper().startswith("BASIC"):
             current_section = "basic"
             continue
-
         if current_section == "cloze":
             cloze_cards.append(line)
         elif current_section == "basic":
             basic_cards.append(line)
-
     return cloze_cards, basic_cards
 
 def add_to_anki(front, back, title, is_cloze):
@@ -108,15 +92,13 @@ def add_to_anki(front, back, title, is_cloze):
         "deckName": DECK_NAME,
         "modelName": "Cloze Deletion with Source" if is_cloze else "Basic with Source",
         "fields": {
-            "Text": front if is_cloze else front,
+            "Text": front,
             "Back": "" if is_cloze else back,
         },
         "tags": ["auto_generated", title.replace(" ", "_")],
-        "options": {
-            "allowDuplicate": False,
-        },
+        "options": {"allowDuplicate": False},
     }
-    req.post(ANKI_CONNECT_URL, json={
+    requests.post(ANKI_CONNECT_URL, json={
         "action": "addNote",
         "version": 6,
         "params": {"note": note}
@@ -125,30 +107,27 @@ def add_to_anki(front, back, title, is_cloze):
 def main():
     if not OPENAI_API_KEY or OPENAI_API_KEY.startswith("sk-..."):
         raise ValueError("Set your OpenAI API key in the OPENAI_API_KEY variable or as an environment variable.")
-
     with open(ARTICLES_FILE, encoding="utf-8") as f:
         urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-
     for url in urls:
         article_text, title = fetch_article_text(url)
         if not article_text:
             continue
-        raw_output = generate_anki_cards(article_text, url, title)
+        raw_output = generate_anki_cards(article_text)
         cloze_cards, basic_cards = split_cards(raw_output)
-
         for card in cloze_cards:
-            front, _, _ = card.split(";")
-            add_to_anki(front.strip(), "", title, is_cloze=True)
-
+            try:
+                front, _, _ = card.split(";")
+                add_to_anki(front.strip(), "", title, is_cloze=True)
+            except ValueError:
+                continue
         for card in basic_cards:
             try:
                 front, back, _ = card.split(";")
                 add_to_anki(front.strip(), back.strip(), title, is_cloze=False)
             except ValueError:
-                continue  # Skip malformed basic cards
-
+                continue
         time.sleep(1)
-
     print("All cards added to Anki via AnkiConnect.")
 
 if __name__ == "__main__":
