@@ -1,4 +1,0 @@
-{{c1::Statistical bias}} occurs when a sample may be unrepresentative in a consistent direction, unlike random error, which is due to {{c2::incomplete knowledge}}. ; ; [Biases: An Introduction]
-{{c1::Cognitive bias}} is a systematic error in thinking that distorts our view of reality and cannot always be fixed by gathering more data. ; ; [Biases: An Introduction]
-Recognizing and overcoming biases requires a {{c1::systematic understanding}} of why good reasoning works and how the brain falls short of it. ; ; [Biases: An Introduction]
-Expertise involves a {{c1::conceptual understanding}} of biases, enabling decision-makers to recognize and counteract them. ; ; [Biases: An Introduction]

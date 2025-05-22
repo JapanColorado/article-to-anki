@@ -1,5 +1,0 @@
-What is statistical bias? ; A consistent error in a sample that makes it unrepresentative of the larger population. ; [Biases: An Introduction]
-Define cognitive bias. ; A systematic error in thinking that skews perception and decision-making. ; [Biases: An Introduction]
-What is base rate neglect? ; Ignoring the general frequency of events when making judgments based on specific characteristics. ; [Biases: An Introduction]
-What is the sunk cost fallacy? ; The tendency to continue investing in something because of prior investments, rather than assessing current value. ; [Biases: An Introduction]
-What is required to effectively counteract biases? ; A deep understanding of biases and the ability to recognize and address them in specific contexts. ; [Biases: An Introduction]

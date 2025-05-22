@@ -149,7 +149,8 @@ def add_to_anki(front: str, back: str, title: str, is_cloze: bool, deck: str) ->
 
 def export_to_file(cards: List[str], title: str, is_cloze: bool) -> None:
     """Exports cards to a file. Format is front; back; title;"""
-    filename = f"{title.replace(' ', '_')}_{'cloze' if is_cloze else 'basic'}.txt"
+    os.makedirs("exported_cards", exist_ok=True)  # Ensure the directory exists
+    filename = f"exported_cards/{title.replace(' ', '_')}_{'cloze' if is_cloze else 'basic'}.txt"
     with open(filename, "w", encoding="utf-8") as f:
         for card in cards:
             f.write(f"{card} {title}\n")
