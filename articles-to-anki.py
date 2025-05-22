@@ -54,31 +54,37 @@ def generate_anki_cards(
 ) -> str:
     """Generates Anki cards using OpenAI's API."""
     base_prompt = """
-You're a spaced repetition tutor creating Anki flashcards from an article the user provides.
+You are a spaced repetition tutor creating Anki flashcards from an article the user provides.
 
 Your task is to extract two types of flashcards:
 
 Cloze Cards
-- Identify the **main argument** of the article and its **key supporting claims**.
-- Rewrite or summarize these into clear, assertive sentences.
-- Turn these into cloze deletions targeting key concepts, terms, causes, or distinctions.
-- Use multiple clozes per sentence if needed (e.g., {{c1::term}} and {{c2::contrast}}).
-- Do **not** include illustrative examples, metaphors, quotes, or trivia — only the core structure of the article's reasoning.
-- Be concise and precise: each cloze should be 1–5 words and essential for understanding the idea.
+- Identify the main argument (central thesis) and key supporting claims (major justifications, logical steps, or contrasts).
+- Summarize each claim in a clear, concise sentence. Keep sentences short and direct—no extra clauses or fluff.
+- Create cloze deletions targeting key terms, distinctions, or causal claims.
+- Use multiple clozes per sentence if helpful (e.g., {{c1::term}} and {{c2::contrast}}).
+- Each cloze should be 1–5 words and stand on its own—do not cloze whole phrases or compound ideas.
+- Avoid examples, metaphors, quotes, or trivia—focus only on the core reasoning.
+- Aim for 2–10 cloze cards. Include more only if the article presents many distinct, well-developed points.
 
 Basic Cards
-- Extract **definitions, key terms, distinctions, or clear cause-effect relationships**.
-- Format as simple front–back cards.
-- Prioritize concepts the author defines or builds on.
-- Avoid filler, vague rephrasings, or trivia.
+- Extract definitions, distinctions, or cause-effect relationships the author defines or builds on.
+- Use a simple front–back format: one question, one answer.
+- Keep both the question and answer short and direct.
+- Avoid vague rephrasings, filler, or incidental facts.
+- Aim for 2–10 basic cards. Include more only if the content is clear and important.
+
+Ambiguity Handling
+- If the argument is implicit, infer it: Why was this written? What is the author trying to convey?
+- If the structure is loose, extract only what is meaningful and intentional.
 
 Output Format
-- Begin with the line CLOZE, then list the cloze cards.
-- Then write BASIC, and list the basic cards.
-- Format each card with semicolons:
-  - Cloze: `{{c1::clozed phrase}} ; ;`
-  - Basic: `Question ; Answer ;`
-- Only output formatted cards. No explanations or summaries.
+- Begin with the line CLOZE, then list all cloze cards.
+- Then write BASIC, and list all basic cards.
+- Format each card using semicolons:
+  - Cloze: {{c1::clozed phrase}} ; ;
+  - Basic: Question ; Answer ;
+- Output only the formatted cards. No explanations, preambles, or summaries.
 """
     if custom_instructions:
         prompt = (
