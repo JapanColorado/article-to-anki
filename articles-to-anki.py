@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import hashlib
 import os
 import time
@@ -70,7 +71,6 @@ def fetch_article_text(url: str, use_cache: bool = False) -> Tuple[Optional[str]
 
     return text, title
 
-
 def generate_anki_cards(
     article_text: str, custom_instructions: Optional[str] = None
 ) -> str:
@@ -86,11 +86,12 @@ Cloze Cards
 - Create cloze deletions targeting key terms, distinctions, or causal claims.
 - Use multiple clozes per sentence if helpful (e.g., {{c1::term}} and {{c2::contrast}}).
 - Each cloze should be 1–5 words and stand on its own—do not cloze whole phrases or compound ideas.
+- Avoid orphaning sentences; ensure each cloze deletion is meaningful and complete.
 - Avoid examples, metaphors, quotes, or trivia—focus only on the core reasoning.
 - Aim for 2–10 cloze cards. Include more only if the article presents many distinct, well-developed points.
 
 Basic Cards
-- Extract definitions, distinctions, or cause-effect relationships the author defines or builds on.
+- Extract definitions, statistics, distinctions, or cause-effect relationships the author defines or builds on.
 - Use a simple front–back format: one question, one answer.
 - Keep both the question and answer short and direct.
 - Avoid vague rephrasings, filler, or incidental facts.
@@ -183,7 +184,8 @@ def export_to_file(cards: List[str], title: str, is_cloze: bool) -> None:
     """Exports cards to a single file exported_cards.txt, appending new cards at the end.
     Card format is front; back; title;"""
     os.makedirs("exported_cards", exist_ok=True)  # Ensure the directory exists
-    file_path = f"exported_cards/{"cloze" if is_cloze else "basic"}_cards.txt"
+    timestamp = datetime.now().strftime("%Y%m%d_%H")
+    file_path = f"exported_cards/{timestamp}_{'cloze' if is_cloze else 'basic'}_cards.txt"
     with open(file_path, "a", encoding="utf-8") as f:
         for card in cards:
             f.write(f"{card} {title} ;\n")
@@ -245,7 +247,7 @@ def main() -> None:
             for card in basic_cards:
                 front, back = card.split(" ; ")
                 add_to_anki(front, back, title, is_cloze=False, deck=args.deck)
-        print(f"Finished processing {url}. Generated {len(cloze_cards)} cloze cards _and {len(basic_cards)} basic cards.")
+        print(f"Finished processing {url}. Generated {len(cloze_cards)} cloze cards and {len(basic_cards)} basic cards.")
         time.sleep(1)  # To avoid hitting the API too fast
 
     print("All done!")
