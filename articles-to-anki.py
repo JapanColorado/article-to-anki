@@ -1,10 +1,13 @@
+import argparse
+import hashlib
 import os
 import time
-import requests
-import argparse
+from typing import Tuple, Optional, List
+
 from bs4 import BeautifulSoup
 from openai import OpenAI
-from typing import Tuple, Optional, List
+from readability import Document
+import requests
 
 # === CONFIGURATION ===
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -14,37 +17,56 @@ ARTICLES_FILE = "articles.txt"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+def fetch_article_text(url: str, use_cache: bool = False) -> Tuple[Optional[str], Optional[str]]:
+    """Fetches the article text and title from the given URL using BeautifulSoup.
+    Caches the result in a hidden file to avoid redownloading if caching is enabled."""
+    if use_cache:
+        # Create a cache directory
+        cache_dir = ".article_cache"
+        os.makedirs(cache_dir, exist_ok=True)
+        # Use a hash of the URL as the filename
+        url_hash = hashlib.sha256(url.encode("utf-8")).hexdigest()
+        cache_path = os.path.join(cache_dir, f"{url_hash}.txt")
 
-def fetch_article_text(url: str) -> Tuple[Optional[str], Optional[str]]:
-    """Fetches the article text and title from the given URL using BeautifulSoup."""
+        # Check if cached file exists
+        if os.path.exists(cache_path):
+            with open(cache_path, "r", encoding="utf-8") as f:
+                title = f.readline().rstrip("\n")
+                text = f.read()
+            print(f"Loaded from cache: {url}")
+            return text, title
+
     print(f"Fetching: {url}")
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/113.0.0.0 Safari/537.36"
+        )
     }
     try:
-        resp = requests.get(url, headers=headers, timeout=15)
+        resp = requests.get(
+            url,
+            headers=headers,
+            timeout=15
+        )
         resp.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch {url}: {e}")
         return None, None
 
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    # Try to get the title
-    title = soup.title.string.strip() if soup.title and soup.title.string else url
-
-    # Try to extract main article text
-    # Prefer <article> tag if present
-    article = soup.find("article")
-    if article:
-        text = article.get_text(separator="\n", strip=True)
-    else:
-        # Fallback: get all <p> tags
-        paragraphs = soup.find_all("p")
-        text = "\n".join(p.get_text(strip=True) for p in paragraphs)
-
-    # Remove excessive whitespace
+    doc = Document(resp.text)
+    title = doc.short_title() or url
+    main_html = doc.summary()
+    soup = BeautifulSoup(main_html, "html.parser")
+    text = soup.get_text(separator="\n", strip=True)
     text = "\n".join(line for line in text.splitlines() if line.strip())
+
+    if use_cache:
+        # Save to cache
+        with open(cache_path, "w", encoding="utf-8") as f: # type: ignore
+            f.write(title + "\n")
+            f.write(text)
 
     return text, title
 
@@ -111,6 +133,10 @@ Output Format
 
 
 def split_cards(generated_text: str) -> Tuple[List[str], List[str]]:
+    """
+    Splits the generated text into two lists of Anki cards: one for cloze cards and
+        one for basic cards, based on their respective section headers in the text.
+    """
     cloze_cards: List[str] = []
     basic_cards: List[str] = []
     current_section: Optional[str] = None
@@ -154,15 +180,17 @@ def add_to_anki(front: str, back: str, title: str, is_cloze: bool, deck: str) ->
 
 
 def export_to_file(cards: List[str], title: str, is_cloze: bool) -> None:
-    """Exports cards to a file. Format is front; back; title;"""
+    """Exports cards to a single file exported_cards.txt, appending new cards at the end.
+    Card format is front; back; title;"""
     os.makedirs("exported_cards", exist_ok=True)  # Ensure the directory exists
-    filename = f"exported_cards/{title.replace(' ', '_')}_{'cloze' if is_cloze else 'basic'}.txt"
-    with open(filename, "w", encoding="utf-8") as f:
+    file_path = f"exported_cards/{"cloze" if is_cloze else "basic"}_cards.txt"
+    with open(file_path, "a", encoding="utf-8") as f:
         for card in cards:
-            f.write(f"{card} {title}\n")
+            f.write(f"{card} {title} ;\n")
 
 
 def main() -> None:
+    """Main function to parse arguments and process articles."""
     parser = argparse.ArgumentParser(description="Generate Anki cards from articles.")
     parser.add_argument(
         "--deck", type=str, help="Name of the Anki deck to use", default="Default"
@@ -179,6 +207,12 @@ def main() -> None:
         help="Custom instructions for the card generator",
         default=None,
     )
+    parser.add_argument(
+        "--cache",
+        action="store_true",
+        help="Enable caching of fetched articles",
+        default=False,
+    )
     args = parser.parse_args()
 
     if not OPENAI_API_KEY or OPENAI_API_KEY.startswith("sk-..."):
@@ -190,7 +224,7 @@ def main() -> None:
             line.strip() for line in f if line.strip() and not line.startswith("#")
         ]
     for url in urls:
-        article_text, title = fetch_article_text(url)
+        article_text, title = fetch_article_text(url, use_cache=args.cache)
         if not article_text:
             print(f"Skipping {url}: could not fetch article text.")
             continue
@@ -211,7 +245,7 @@ def main() -> None:
             for card in basic_cards:
                 front, back = card.split(" ; ")
                 add_to_anki(front, back, title, is_cloze=False, deck=args.deck)
-        print(f"Finished processing {url}. Generated {len(cloze_cards)} cloze cards and {len(basic_cards)} basic cards.")
+        print(f"Finished processing {url}. Generated {len(cloze_cards)} cloze cards _and {len(basic_cards)} basic cards.")
         time.sleep(1)  # To avoid hitting the API too fast
 
     print("All done!")
