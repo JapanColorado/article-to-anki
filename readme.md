@@ -12,3 +12,4 @@ A tool to convert articles into Anki flashcards automatically using ChatGPT.
 ## Wishlist/Ideas
 
 - Flag to have a second pass of the model refine/thin out the cards.
+- Add title comments to export files.

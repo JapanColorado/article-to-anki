@@ -73,6 +73,34 @@ def fetch_article_text(url: str, use_cache: bool = False) -> Tuple[Optional[str]
     text = soup.get_text(separator="\n", strip=True)
     text = "\n".join(line for line in text.splitlines() if line.strip())
 
+    
+    if not text:
+        print("Failed to extract text. Trying again with ChatGPT parsing.")
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a web scraper that extracts the main text and title from an article."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": f"Extract the main text and title from this HTML:\n{resp.text}",
+                },
+            ],
+            temperature=0.1,
+        )
+        content = response.choices[0].message.content
+        if content:
+            lines = content.splitlines()
+            title = lines[0].strip().replace("Title: ", "")
+            text = "\n".join(line.strip() for line in lines[1:] if line.strip())
+        else:
+            print("Failed to extract text with ChatGPT.")
+            return None, None
+    
     if use_cache:
         # Save to cache
         with open(cache_path, "w", encoding="utf-8") as f: # type: ignore
