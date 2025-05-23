@@ -60,6 +60,16 @@ def fetch_article_text(url: str, use_cache: bool = False) -> Tuple[Optional[str]
     title = doc.short_title() or url
     main_html = doc.summary()
     soup = BeautifulSoup(main_html, "html.parser")
+
+    # Remove sections whose id or class contains "comment"
+    for c in soup.find_all(
+        lambda t: (
+            (t.has_attr("id") and "comment" in t["id"].lower())
+            or (t.has_attr("class") and any("comment" in x.lower() for x in t["class"]))
+        )
+    ):
+        c.decompose()
+
     text = soup.get_text(separator="\n", strip=True)
     text = "\n".join(line for line in text.splitlines() if line.strip())
 
@@ -226,13 +236,18 @@ def main() -> None:
         urls: List[str] = [
             line.strip() for line in f if line.strip() and not line.startswith("#")
         ]
+
+    skipped_articles: List[Tuple] = []
+    
     for url in urls:
         article_text, title = fetch_article_text(url, use_cache=args.cache)
         if not article_text:
-            print(f"Skipping {url}: could not fetch article text.")
+            print(f"Skipping {title}: could not fetch article text.")
+            skipped_articles.append((url,title))
             continue
         if not title:
             print(f"Skipping {url}: could not determine article title.")
+            skipped_articles.append((url,url))
             continue
         raw_output = generate_anki_cards(
             article_text, custom_instructions=args.instructions
@@ -248,11 +263,14 @@ def main() -> None:
             for card in basic_cards:
                 front, back = card.split(" ; ")
                 add_to_anki(front, back, title, is_cloze=False, deck=args.deck)
-        print(f"Finished processing {url}. Generated {len(cloze_cards)} cloze cards and {len(basic_cards)} basic cards.")
+        print(f"Finished processing {title}. Generated {len(cloze_cards)} cloze cards and {len(basic_cards)} basic cards.")
         time.sleep(1)  # To avoid hitting the API too fast
 
     print("All done!")
-
+    if skipped_articles:
+        print("Skipped Articles:")
+        for url, title in skipped_articles:
+            print(f"{title} - {url}")
 
 if __name__ == "__main__":
     main()
