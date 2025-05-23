@@ -88,8 +88,9 @@ Cloze Cards
 - Each cloze should be 1–5 words and stand on its own—do not cloze whole phrases or compound ideas.
 - Avoid orphaning sentences; ensure each cloze deletion is meaningful and complete.
 - Avoid examples, metaphors, quotes, or trivia—focus only on the core reasoning.
-- Aim for 2–10 cloze cards. Include more only if the article presents many distinct, well-developed points.
-
+- Each cloze deletion should be a complete thought that can stand alone. Try and combine clozes into a single sentence if they are closely related.
+- Aim for 2–10 cloze cards. Include more only if necessary for clarity and understanding.
+- Avoid vague rephrasings, filler, or incidental facts.
 Basic Cards
 - Extract definitions, statistics, distinctions, or cause-effect relationships the author defines or builds on.
 - Use a simple front–back format: one question, one answer.
