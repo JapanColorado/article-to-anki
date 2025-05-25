@@ -1,3 +1,4 @@
-articles.txt
-/exported_cards
-/.article_cache
+articles
+exported_cards
+.article_cache
+__pycache__
