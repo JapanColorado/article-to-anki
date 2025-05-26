@@ -1,12 +1,13 @@
 import hashlib
 import os
-from typing import Tuple, Optional, List
+import time
+from typing import Tuple, Optional, List, Dict, Any
 
 import requests
 from bs4 import BeautifulSoup
 from readability import Document
 import pymupdf
-from config import MODEL, client
+from config import MODEL, client, get_processed_articles, save_processed_articles
 
 
 class Article:
@@ -27,20 +28,48 @@ class Article:
         self.file_path = file_path
         self.title: Optional[str] = None
         self.text: Optional[str] = None
+        self.content_hash: Optional[str] = None
+        self.is_processed: bool = False
+        self._identifier: Optional[str] = None
 
-    def fetch_content(self, use_cache: bool = False):
+    @property
+    def identifier(self) -> str:
+        """
+        Returns a unique identifier for the article (URL or file path).
+        """
+        if self._identifier is not None:
+            return self._identifier
+        if self.url:
+            self._identifier = self.url
+        elif self.file_path:
+            self._identifier = os.path.basename(self.file_path)
+        else:
+            raise ValueError("Either url or file_path must be provided.")
+        return self._identifier
+
+    def fetch_content(self, use_cache: bool = False, skip_if_processed: bool = False):
         """
         Fetches and sets the article's content and title from either a file or a URL.
 
         Args:
             use_cache (bool): Whether to cache URL content to avoid repeated fetching.
+            skip_if_processed (bool): Whether to skip fetching if the article has already been processed.
         """
+        # Check if the article has already been processed
+        if skip_if_processed and self._check_if_processed():
+            self.is_processed = True
+            return
+            
         if self.file_path:
             self._fetch_from_file()
         elif self.url:
             self._fetch_from_url_or_cache(use_cache)
         else:
             raise ValueError("Either url or file_path must be provided.")
+        
+        # Generate a hash of the content
+        if self.text:
+            self._generate_content_hash()
 
     def _fetch_from_file(self):
         """
@@ -138,6 +167,47 @@ class Article:
                 f.write(title + "\n")
                 f.write(text)
 
+    def _generate_content_hash(self) -> None:
+        """
+        Generates a hash of the article content for identifying duplicates.
+        """
+        if not self.text:
+            return
+        
+        # Include title in hash calculation if available
+        content_to_hash = (self.title or "") + "\n" + self.text
+        self.content_hash = hashlib.sha256(content_to_hash.encode('utf-8')).hexdigest()
+    
+    def _check_if_processed(self) -> bool:
+        """
+        Checks if the article has already been processed by looking up its
+        identifier in the processed articles file.
+        
+        Returns:
+            bool: True if the article has been processed before, False otherwise.
+        """
+        processed_articles = get_processed_articles()
+        return self.identifier in processed_articles
+    
+    def mark_as_processed(self, deck: str) -> None:
+        """
+        Marks the article as processed by adding its information to the processed articles file.
+        
+        Args:
+            deck (str): The name of the deck where cards were added.
+        """
+        if not self.content_hash:
+            self._generate_content_hash()
+            
+        processed_articles = get_processed_articles()
+        processed_articles[self.identifier] = {
+            "timestamp": time.time(),
+            "title": self.title,
+            "hash": self.content_hash,
+            "deck": deck
+        }
+        save_processed_articles(processed_articles)
+    
     def generate_cards(self, custom_prompt: Optional[str] = None) -> Tuple[List[str], List[str]]:
         """
         Generates Anki flashcards from the article's text using GPT completions.
@@ -149,6 +219,10 @@ class Article:
         Returns:
             Tuple[List[str], List[str]]: A tuple with a list of cloze cards and a list of basic cards.
         """
+        # If the article was already processed, return empty lists
+        if self.is_processed:
+            print(f"Skipping card generation for \"{self.title or self.identifier}\": already processed.")
+            return [], []
         base_prompt = """
 You are a spaced repetition tutor creating Anki flashcards from an article the user provides.
 
