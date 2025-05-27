@@ -18,14 +18,14 @@ CARD_DATABASE_FILE = ".card_database.json"
 # Default similarity threshold for considering cards as duplicates (0.0 to 1.0)
 # Higher values = stricter duplicate detection (require more similarity)
 # Lower values = more lenient duplicate detection (accept more variations as duplicates)
-SIMILARITY_THRESHOLD = 0.85
+SIMILARITY_THRESHOLD = 0.75
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 def get_processed_articles():
     """
     Returns a dictionary of processed articles with their timestamps and hashes.
-    
+
     Returns:
         dict: A dictionary with article identifiers (URLs or filenames) as keys,
               and dictionaries containing 'timestamp', 'title', and 'hash' as values.
@@ -41,7 +41,7 @@ def get_processed_articles():
 def get_card_database():
     """
     Returns the database of previously created cards with their content and metadata.
-    
+
     Returns:
         dict: A dictionary with card IDs as keys and card data as values.
     """
@@ -56,7 +56,7 @@ def get_card_database():
 def save_processed_articles(processed_articles):
     """
     Saves the processed articles dictionary to the PROCESSED_ARTICLES_FILE.
-    
+
     Args:
         processed_articles (dict): Dictionary of processed articles.
     """
@@ -65,18 +65,18 @@ def save_processed_articles(processed_articles):
             json.dump(processed_articles, f, indent=2)
     except IOError as e:
         print(f"Error saving {PROCESSED_ARTICLES_FILE}: {e}")
-        
+
 def save_card_database(card_database):
     """
     Saves the card database to the CARD_DATABASE_FILE.
-    
+
     Args:
         card_database (dict): Dictionary containing cards and metadata.
     """
     # Update last_updated timestamp
     from datetime import datetime
     card_database["metadata"]["last_updated"] = datetime.now().isoformat()
-    
+
     try:
         with open(CARD_DATABASE_FILE, 'w') as f:
             json.dump(card_database, f, indent=2)

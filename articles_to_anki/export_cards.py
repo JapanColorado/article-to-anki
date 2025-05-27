@@ -4,8 +4,8 @@ import json
 from datetime import datetime
 import uuid
 from typing import List, Dict, Any, Tuple
-from config import ANKICONNECT_URL, BASIC_MODEL_NAME, CLOZE_MODEL_NAME, SIMILARITY_THRESHOLD, get_card_database, save_card_database
-from text_utils import are_cards_similar
+from articles_to_anki.config import ANKICONNECT_URL, BASIC_MODEL_NAME, CLOZE_MODEL_NAME, SIMILARITY_THRESHOLD, get_card_database, save_card_database
+from articles_to_anki.text_utils import are_cards_similar
 
 class ExportCards:
     """

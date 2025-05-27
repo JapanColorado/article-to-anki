@@ -1,0 +1,157 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "articles-to-anki"
+version = "0.1.0"
+description = "A tool to generate Anki flashcards from articles using GPT-4"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "japancolorado", email = "japancolorado@duck.com"}
+]
+maintainers = [
+    {name = "japancolorado", email = "japancolorado@duck.com"}
+]
+keywords = [
+    "anki", 
+    "flashcards", 
+    "gpt", 
+    "articles", 
+    "study", 
+    "spaced-repetition",
+    "learning",
+    "education",
+    "ai",
+    "openai"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Education",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "openai>=1.0.0",
+    "requests>=2.25.0",
+    "tqdm>=4.60.0",
+    "beautifulsoup4>=4.9.0",
+    "readability-lxml>=0.8.0",
+    "pymupdf>=1.18.0",
+]
+
+[project.optional-dependencies]
+advanced_similarity = [
+    "scikit-learn>=0.24.0",
+    "nltk>=3.6.0",
+]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.10.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "twine>=4.0.0",
+    "build>=0.8.0",
+    "setuptools>=61.0",
+    "wheel>=0.37.0",
+]
+all = [
+    "scikit-learn>=0.24.0",
+    "nltk>=3.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/articles-to-anki"
+Repository = "https://github.com/yourusername/articles-to-anki.git"
+Issues = "https://github.com/yourusername/articles-to-anki/issues"
+Documentation = "https://github.com/yourusername/articles-to-anki#readme"
+Changelog = "https://github.com/yourusername/articles-to-anki/blob/main/CHANGELOG.md"
+
+[project.scripts]
+articles-to-anki = "articles_to_anki.cli:main"
+articles-to-anki-setup = "articles_to_anki.setup_app:main"
+articles-to-anki-fix-nltk = "articles_to_anki.fix_nltk:fix_nltk_issues"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["articles_to_anki*"]
+exclude = ["tests*", "scripts*", "docs*"]
+
+[tool.setuptools.package-data]
+articles_to_anki = [
+    "*.md",
+    "*.txt",
+    "*.json",
+]
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["articles_to_anki"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

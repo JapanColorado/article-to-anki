@@ -20,7 +20,7 @@ from pathlib import Path
 
 # Import configuration values
 try:
-    from config import ARTICLE_DIR, URLS_FILE
+    from articles_to_anki.config import ARTICLE_DIR, URLS_FILE
 except ImportError:
     # Default values if config.py can't be imported
     ARTICLE_DIR = "articles"

@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include requirements.txt
+include requirements-dev.txt
+include CHANGELOG.md
+recursive-include articles_to_anki *.py
+recursive-include articles_to_anki *.txt
+recursive-include articles_to_anki *.md
+recursive-include articles_to_anki *.json
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store

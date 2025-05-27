@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from readability import Document
 import pymupdf
-from config import MODEL, client, get_processed_articles, save_processed_articles
+from articles_to_anki.config import MODEL, client, get_processed_articles, save_processed_articles
 
 
 class Article:
@@ -59,14 +59,14 @@ class Article:
         if skip_if_processed and self._check_if_processed():
             self.is_processed = True
             return
-            
+
         if self.file_path:
             self._fetch_from_file()
         elif self.url:
             self._fetch_from_url_or_cache(use_cache)
         else:
             raise ValueError("Either url or file_path must be provided.")
-        
+
         # Generate a hash of the content
         if self.text:
             self._generate_content_hash()
@@ -173,32 +173,32 @@ class Article:
         """
         if not self.text:
             return
-        
+
         # Include title in hash calculation if available
         content_to_hash = (self.title or "") + "\n" + self.text
         self.content_hash = hashlib.sha256(content_to_hash.encode('utf-8')).hexdigest()
-    
+
     def _check_if_processed(self) -> bool:
         """
         Checks if the article has already been processed by looking up its
         identifier in the processed articles file.
-        
+
         Returns:
             bool: True if the article has been processed before, False otherwise.
         """
         processed_articles = get_processed_articles()
         return self.identifier in processed_articles
-    
+
     def mark_as_processed(self, deck: str) -> None:
         """
         Marks the article as processed by adding its information to the processed articles file.
-        
+
         Args:
             deck (str): The name of the deck where cards were added.
         """
         if not self.content_hash:
             self._generate_content_hash()
-            
+
         processed_articles = get_processed_articles()
         processed_articles[self.identifier] = {
             "timestamp": time.time(),
@@ -207,7 +207,7 @@ class Article:
             "deck": deck
         }
         save_processed_articles(processed_articles)
-    
+
     def generate_cards(self, custom_prompt: Optional[str] = None) -> Tuple[List[str], List[str]]:
         """
         Generates Anki flashcards from the article's text using GPT completions.
@@ -237,13 +237,14 @@ Cloze Cards
 - Avoid orphaning sentences; ensure each cloze deletion is meaningful and complete.
 - Avoid examples, metaphors, quotes, or trivia—focus only on the core reasoning.
 - Each cloze deletion should be a complete thought that can stand alone. Try and combine clozes into a single sentence if they are closely related.
-- Aim for 2–10 cloze cards. Include more only if necessary for clarity and understanding.
+- Generate approximately one card for every 100 words in the article, dividing roughly evenly between cloze and basic cards.
+
 Basic Cards
 - Extract definitions, statistics, distinctions, or cause-effect relationships the author defines or builds on.
 - Use a simple front–back format: one question, one answer.
 - Keep both the question and answer short and direct.
 - Avoid vague rephrasings, filler, or incidental facts.
-- Aim for 2–10 basic cards. Include more only if the content is clear and important.
+- Generate approximately one card for every 100 words in the article, dividing roughly evenly between cloze and basic cards.
 
 Ambiguity Handling
 - If the argument is implicit, infer it: Why was this written? What is the author trying to convey?

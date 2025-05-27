@@ -1,0 +1,8 @@
+{
+  "package_name": "articles-to-anki",
+  "github_owner": "JapanColorado",
+  "github_repo": "articles-to-anki",
+  "workflow_file": "publish.yml",
+  "use_environments": true,
+  "use_test_pypi": true
+}

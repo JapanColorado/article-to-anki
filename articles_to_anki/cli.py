@@ -1,9 +1,9 @@
 import os
 import argparse
 import requests
-from config import OPENAI_API_KEY, URLS_FILE, ARTICLE_DIR, ALLOWED_EXTENSIONS, ANKICONNECT_URL, CLOZE_MODEL_NAME, BASIC_MODEL_NAME, SIMILARITY_THRESHOLD
-from articles import Article
-from export_cards import ExportCards
+from articles_to_anki.config import OPENAI_API_KEY, URLS_FILE, ARTICLE_DIR, ALLOWED_EXTENSIONS, ANKICONNECT_URL, CLOZE_MODEL_NAME, BASIC_MODEL_NAME, SIMILARITY_THRESHOLD
+from articles_to_anki.articles import Article
+from articles_to_anki.export_cards import ExportCards
 
 def check_config() -> None:
     """
@@ -150,8 +150,8 @@ def main() -> None:
         help=f"Threshold for semantic similarity when detecting duplicate cards (0.0-1.0, default: {SIMILARITY_THRESHOLD}).",
     )
     args = parser.parse_args()
-
-    check_anki_note_model()
+    if not args.to_file:
+        check_anki_note_model()
     check_config()
 
     with open(URLS_FILE, "r") as f:
@@ -168,7 +168,7 @@ def main() -> None:
 
     for article in articles:
         article.fetch_content(use_cache=args.use_cache, skip_if_processed=(not args.process_all))
-        
+
         # Skip already processed articles unless explicitly told to process all
         if article.is_processed and not args.process_all:
             print(f"Skipping \"{article.title or article.identifier}\": already processed. Use --process_all to override.")
@@ -194,7 +194,7 @@ def main() -> None:
             similarity_threshold=args.similarity_threshold,
         )
         exporter.export()
-        
+
         # Mark the article as processed
         article.mark_as_processed(args.deck)
 

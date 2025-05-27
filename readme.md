@@ -256,6 +256,7 @@ If you experience problems with the semantic similarity features related to NLTK
 ## TODO
 
 - Add more usage examples and screenshots
+- Finetune similarity_threshold
 - Add tests and CI/CD pipeline
 - Support more file formats and advanced parsing options
 - Add better error reporting with colored output

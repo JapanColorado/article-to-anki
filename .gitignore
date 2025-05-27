@@ -44,3 +44,22 @@ ENV/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Development
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
