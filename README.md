@@ -1,0 +1,286 @@
+# Articles to Anki
+
+**Articles to Anki** is a Python tool that automates the creation of high-quality Anki flashcards from articles, whether sourced from URLs or local files. Leveraging GPT-4, it generates both cloze and basic cards, and can export them directly to Anki (via AnkiConnect) or to text files for manual import.
+
+## Features
+
+- **Fetch Articles**: Download and parse articles from URLs or supported local file formats (PDF, EPUB, DOCX, TXT, and more)
+- **Multiple URL Sources**: Process URLs from multiple organized files using `--url-files`
+- **Smart Parsing**: Uses readability and GPT-4 to extract clean article text and titles, even from messy web pages
+- **Intelligent Card Generation**: Automatically generates both cloze and basic Anki cards, focusing on core arguments, definitions, and key facts
+- **Flexible Export**: Send cards directly to Anki via AnkiConnect, or export them as text files for later use
+- **Smart Duplicate Detection**: Identifies semantically similar cards even with different wording, preventing redundant flashcards
+- **Custom Prompts**: Optionally provide your own prompt to customize card generation
+- **Caching**: Optionally cache downloaded articles to speed up repeated runs
+- **Process Control**: Fine-grained control over which articles to process and whether to allow duplicates
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install with basic features
+pip install articles-to-anki
+
+# Install with advanced similarity detection (recommended)
+pip install articles-to-anki[advanced_similarity]
+```
+
+### Setup
+
+```bash
+# Create directories and download required resources
+articles-to-anki-setup
+
+# Set your OpenAI API key
+export OPENAI_API_KEY='your_openai_api_key'
+```
+
+### Usage
+
+```bash
+# Add URLs to articles/urls.txt, then run:
+articles-to-anki
+
+# Or process URLs from specific files:
+articles-to-anki --url-files tech_articles.txt science_articles.txt
+
+# Export to a specific deck with caching:
+articles-to-anki --deck "Learning" --use_cache
+```
+
+## Multiple URL Files
+
+Organize your articles by topic, priority, or source using multiple URL files:
+
+```bash
+# Process URLs from multiple organized files
+articles-to-anki --url-files technology.txt science.txt history.txt
+
+# Combine with other options
+articles-to-anki --url-files priority_articles.txt --deck "High Priority" --use_cache
+```
+
+### File Organization Examples
+
+```
+urls/
+├── technology.txt      # AI, programming, tech news
+├── science.txt         # Research papers, discoveries
+├── high_priority.txt   # Must-read articles
+└── daily_reading.txt   # Regular reading list
+```
+
+Each file follows the same format as `articles/urls.txt`:
+```
+# Technology Articles
+https://example.com/ai-breakthrough
+https://example.com/programming-tutorial
+
+# Comments start with #
+https://example.com/machine-learning-guide
+```
+
+## Requirements
+
+- Python 3.8+
+- OpenAI API key
+- Anki with [AnkiConnect](https://foosoft.net/projects/anki-connect/) (for direct export to Anki)
+
+## Installation Options
+
+### From PyPI (Recommended)
+
+```bash
+# Basic installation
+pip install articles-to-anki
+
+# With advanced similarity detection
+pip install articles-to-anki[advanced_similarity]
+
+# All features
+pip install articles-to-anki[all]
+```
+
+### From GitHub
+
+```bash
+# Latest development version
+pip install git+https://github.com/yourusername/articles-to-anki.git
+
+# With advanced features
+pip install "git+https://github.com/yourusername/articles-to-anki.git#egg=articles-to-anki[advanced_similarity]"
+```
+
+### Development Installation
+
+```bash
+git clone https://github.com/yourusername/articles-to-anki.git
+cd articles-to-anki
+pip install -e .[dev]
+```
+
+## Configuration
+
+### 1. Set OpenAI API Key
+
+```bash
+export OPENAI_API_KEY='your_openai_api_key'
+```
+
+Or add it to your shell profile for persistence.
+
+### 2. Run Setup
+
+```bash
+articles-to-anki-setup
+```
+
+This creates necessary directories and downloads NLTK resources for advanced similarity detection.
+
+### 3. Add Content
+
+- **URLs**: Add to `articles/urls.txt` or create custom URL files
+- **Local Files**: Place PDF, EPUB, DOCX, TXT, etc. in the `articles/` directory
+
+## Usage
+
+### Basic Usage
+
+```bash
+articles-to-anki
+```
+
+### Command Line Options
+
+```bash
+articles-to-anki [OPTIONS]
+```
+
+**Options:**
+- `--deck DECKNAME` — Anki deck to export to (default: "Default")
+- `--url-files FILE [FILE ...]` — Additional URL files to process
+- `--use_cache` — Cache downloaded articles to avoid re-fetching
+- `--to_file` — Export to text files instead of Anki
+- `--custom_prompt "..."` — Custom instructions for card generation
+- `--allow_duplicates` — Allow duplicate cards to be created
+- `--process_all` — Process all articles, even previously processed ones
+- `--similarity_threshold 0.85` — Similarity threshold for duplicate detection (0.0-1.0)
+
+### Examples
+
+```bash
+# Process multiple URL files with custom deck
+articles-to-anki --url-files tech.txt science.txt --deck "Learning"
+
+# Use caching and custom prompt
+articles-to-anki --use_cache --custom_prompt "Focus on practical applications"
+
+# Export to files instead of Anki
+articles-to-anki --to_file --url-files priority.txt
+
+# Allow duplicates and process all articles
+articles-to-anki --allow_duplicates --process_all
+
+# Adjust duplicate detection sensitivity
+articles-to-anki --similarity_threshold 0.75
+```
+
+## Supported File Types
+
+- **Documents**: PDF, DOCX, DOC, TXT, MD
+- **E-books**: EPUB, MOBI, FB2
+- **Presentations**: PPTX, PPT
+- **Other**: XPS, CBZ, SVG
+
+## How It Works
+
+1. **Article Extraction**: Downloads URLs or reads local files, extracting clean text and titles
+2. **Duplicate Prevention**: Checks if articles have been processed before (unless `--process_all`)
+3. **Card Generation**: Uses GPT-4 to create focused cloze and basic cards from article content
+4. **Smart Filtering**: Detects semantically similar cards to prevent duplicates (unless `--allow_duplicates`)
+5. **Export**: Sends cards to Anki via AnkiConnect or exports to text files
+6. **Record Keeping**: Tracks processed articles to avoid reprocessing
+
+## Troubleshooting
+
+### Setup Issues
+
+If you encounter setup problems:
+
+```bash
+# Fix NLTK issues specifically
+articles-to-anki-fix-nltk
+
+# Recreate directories only
+articles-to-anki-setup --dirs-only
+
+# Setup NLTK resources only
+articles-to-anki-setup --nltk-only
+```
+
+### Common Problems
+
+**AnkiConnect Issues:**
+- Ensure Anki is running with AnkiConnect addon enabled
+- Check that cloze cards have proper `{{c1::text}}` formatting
+- Try exporting to files first: `--to_file`
+
+**NLTK Errors:**
+- Run `articles-to-anki-fix-nltk` for automated fixes
+- Set `NLTK_DATA` environment variable: `export NLTK_DATA=~/nltk_data`
+- The tool automatically falls back to basic similarity detection if advanced features fail
+
+**API Errors:**
+- Verify your OpenAI API key is valid and has quota
+- Check network connectivity
+
+**No Cards Generated:**
+- Verify article content is substantial and readable
+- Try adjusting your custom prompt
+- Check that URLs are accessible
+
+## Advanced Configuration
+
+Edit `articles_to_anki/config.py` to customize:
+- GPT model selection
+- File paths and directories
+- AnkiConnect settings
+- Default similarity thresholds
+
+## Development
+
+### Running Tests
+
+```bash
+pip install -e .[dev]
+pytest
+```
+
+### Code Formatting
+
+```bash
+black articles_to_anki/
+flake8 articles_to_anki/
+```
+
+### Building for Distribution
+
+```bash
+python -m build
+twine check dist/*
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/articles-to-anki/issues)
+- **Documentation**: This README and inline code documentation
+- **Troubleshooting**: Use `articles-to-anki-fix-nltk` for NLTK issues

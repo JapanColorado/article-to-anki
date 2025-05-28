@@ -137,6 +137,8 @@ class Article:
 
         # Fallback to GPT parsing if text extraction failed.
         if not text:
+            if not client:
+                raise RuntimeError(f"Failed to extract text from {self.url} and no OpenAI client available for fallback extraction.")
             print(f"Failed to extract text from {self.url}. Using GPT extraction fallback.")
             response = client.chat.completions.create(
                 model=MODEL,
@@ -269,6 +271,9 @@ Output Format
             prompt = base_prompt + "\nArticle Content:\n"
 
         full_prompt = prompt + (self.text or "")
+
+        if not client:
+            raise RuntimeError("OpenAI client not available. Please set OPENAI_API_KEY environment variable.")
 
         print(f"Generating cards for \"{self.title}\"...")
 

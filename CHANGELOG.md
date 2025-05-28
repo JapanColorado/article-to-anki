@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2025-05-27
+## [0.2.0] - 2025-01-27
+
+### Added
+- `--url-files` option to process URLs from multiple organized files
+- Enhanced error handling for missing URL files
+- Better organization support for topic-based, priority-based, or source-based URL management
+- Improved README with comprehensive examples and troubleshooting
+
+### Changed
+- Updated project structure and cleaned up repository for PyPI release
+
+## [0.1.0] - 2025-01-27
 
 ### Added
 - Initial release

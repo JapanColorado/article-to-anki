@@ -20,7 +20,10 @@ CARD_DATABASE_FILE = ".card_database.json"
 # Lower values = more lenient duplicate detection (accept more variations as duplicates)
 SIMILARITY_THRESHOLD = 0.75
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Initialize OpenAI client only if API key is available
+client = None
+if OPENAI_API_KEY:
+    client = OpenAI(api_key=OPENAI_API_KEY)
 
 def get_processed_articles():
     """

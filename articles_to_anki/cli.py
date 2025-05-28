@@ -109,6 +109,31 @@ def check_anki_note_model() -> None:
     except requests.exceptions.RequestException as e:
         print(f"Failed to check Anki note models: {e}. Check if Anki is running and AnkiConnect is enabled.")
 
+def read_urls_from_files(url_files):
+    """
+    Read URLs from multiple files and combine them.
+    
+    Args:
+        url_files (list): List of file paths containing URLs
+        
+    Returns:
+        list: Combined list of URLs from all files
+    """
+    all_urls = []
+    
+    for file_path in url_files:
+        try:
+            with open(file_path, "r") as f:
+                urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+                all_urls.extend(urls)
+                print(f"Loaded {len(urls)} URLs from {file_path}")
+        except FileNotFoundError:
+            print(f"Warning: URL file '{file_path}' not found. Skipping.")
+        except Exception as e:
+            print(f"Error reading URLs from '{file_path}': {e}. Skipping.")
+    
+    return all_urls
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fetch articles and export Anki cards. Run 'articles-to-anki-setup' first if this is your first time.")
     parser.add_argument(
@@ -149,18 +174,39 @@ def main() -> None:
         default=SIMILARITY_THRESHOLD,
         help=f"Threshold for semantic similarity when detecting duplicate cards (0.0-1.0, default: {SIMILARITY_THRESHOLD}).",
     )
+    parser.add_argument(
+        "--url-files",
+        nargs="+",
+        metavar="FILE",
+        help="Additional text files containing URLs to process (one URL per line, # for comments). Can specify multiple files.",
+    )
     args = parser.parse_args()
     if not args.to_file:
         check_anki_note_model()
     check_config()
 
-    with open(URLS_FILE, "r") as f:
-        urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+    # Read URLs from the default file
+    urls = []
+    try:
+        with open(URLS_FILE, "r") as f:
+            urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+            print(f"Loaded {len(urls)} URLs from {URLS_FILE}")
+    except FileNotFoundError:
+        print(f"Default URL file '{URLS_FILE}' not found.")
+    except Exception as e:
+        print(f"Error reading default URL file '{URLS_FILE}': {e}")
+    
+    # Read URLs from additional files if specified
+    if args.url_files:
+        additional_urls = read_urls_from_files(args.url_files)
+        urls.extend(additional_urls)
+        print(f"Total URLs loaded: {len(urls)}")
+    
     local_files = [f for f in os.listdir(ARTICLE_DIR) if f.endswith(tuple(ALLOWED_EXTENSIONS)) and not f.startswith(".") and not f == URLS_FILE.split("/")[-1]]
 
     if not urls and not local_files:
         print(f"No URLs or local files found in {URLS_FILE} or {ARTICLE_DIR}.")
-        print(f"Please add URLs to {URLS_FILE} or add article files to {ARTICLE_DIR}, then run the script again.")
+        print(f"Please add URLs to {URLS_FILE}, specify additional URL files with --url-files, or add article files to {ARTICLE_DIR}, then run the script again.")
         return
 
     articles = [Article(url=url) for url in urls if url.strip()]
