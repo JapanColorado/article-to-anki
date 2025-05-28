@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "articles-to-anki"
-version = "0.2.1"
+version = "0.3.0"
 description = "A tool to generate Anki flashcards from articles using GPT-4"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "japancolorado", email = "japancolorado@duck.com"}
 ]
@@ -74,11 +74,11 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/articles-to-anki"
-Repository = "https://github.com/yourusername/articles-to-anki.git"
-Issues = "https://github.com/yourusername/articles-to-anki/issues"
-Documentation = "https://github.com/yourusername/articles-to-anki#readme"
-Changelog = "https://github.com/yourusername/articles-to-anki/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/japancolorado/articles-to-anki"
+Repository = "https://github.com/japancolorado/articles-to-anki.git"
+Issues = "https://github.com/japancolorado/articles-to-anki/issues"
+Documentation = "https://github.com/japancolorado/articles-to-anki#readme"
+Changelog = "https://github.com/japancolorado/articles-to-anki/blob/main/CHANGELOG.md"
 
 [project.scripts]
 articles-to-anki = "articles_to_anki.cli:main"

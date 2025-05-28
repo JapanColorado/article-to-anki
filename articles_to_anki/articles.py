@@ -47,13 +47,14 @@ class Article:
             raise ValueError("Either url or file_path must be provided.")
         return self._identifier
 
-    def fetch_content(self, use_cache: bool = False, skip_if_processed: bool = False):
+    def fetch_content(self, use_cache: bool = False, skip_if_processed: bool = False, model: Optional[str] = None):
         """
         Fetches and sets the article's content and title from either a file or a URL.
 
         Args:
             use_cache (bool): Whether to cache URL content to avoid repeated fetching.
             skip_if_processed (bool): Whether to skip fetching if the article has already been processed.
+            model (Optional[str]): OpenAI model to use for fallback text extraction. If None, uses default from config.
         """
         # Check if the article has already been processed
         if skip_if_processed and self._check_if_processed():
@@ -63,7 +64,7 @@ class Article:
         if self.file_path:
             self._fetch_from_file()
         elif self.url:
-            self._fetch_from_url_or_cache(use_cache)
+            self._fetch_from_url_or_cache(use_cache, model)
         else:
             raise ValueError("Either url or file_path must be provided.")
 
@@ -83,12 +84,13 @@ class Article:
         self.title = title
         self.text = text
 
-    def _fetch_from_url_or_cache(self, use_cache: bool = False):
+    def _fetch_from_url_or_cache(self, use_cache: bool = False, model: Optional[str] = None):
         """
         Fetches the article content and title from a URL, optionally using caching.
 
         Args:
             use_cache (bool): Whether to use local caching of the article content.
+            model (Optional[str]): OpenAI model to use for fallback text extraction. If None, uses default from config.
         """
         cache_path = None
         if use_cache:
@@ -139,9 +141,10 @@ class Article:
         if not text:
             if not client:
                 raise RuntimeError(f"Failed to extract text from {self.url} and no OpenAI client available for fallback extraction.")
-            print(f"Failed to extract text from {self.url}. Using GPT extraction fallback.")
+            selected_model = model or MODEL
+            print(f"Failed to extract text from {self.url}. Using GPT extraction fallback with model {selected_model}.")
             response = client.chat.completions.create(
-                model=MODEL,
+                model=selected_model,
                 messages=[
                     {
                         "role": "system",
@@ -210,13 +213,15 @@ class Article:
         }
         save_processed_articles(processed_articles)
 
-    def generate_cards(self, custom_prompt: Optional[str] = None) -> Tuple[List[str], List[str]]:
+    def generate_cards(self, custom_prompt: Optional[str] = None, model: Optional[str] = None) -> Tuple[List[str], List[str]]:
         """
         Generates Anki flashcards from the article's text using GPT completions.
-        Two types of cards are created: Cloze cards and Basic cards.
+        For each key concept, the optimal card format (cloze or basic) is chosen
+        to avoid redundancy and maximize learning effectiveness.
 
         Args:
             custom_prompt (Optional[str]): Additional instructions to modify the base prompt.
+            model (Optional[str]): OpenAI model to use for generation. If None, uses default from config.
 
         Returns:
             Tuple[List[str], List[str]]: A tuple with a list of cloze cards and a list of basic cards.
@@ -228,33 +233,39 @@ class Article:
         base_prompt = """
 You are a spaced repetition tutor creating Anki flashcards from an article the user provides.
 
-Your task is to extract two types of flashcards:
+Your task is to extract key ideas and present each one using the optimal flashcard format. For each distinct concept, choose either cloze or basic format based on what works best for that specific type of information.
 
-Cloze Cards
-- Identify the main argument (central thesis) and key supporting claims (major justifications, logical steps, or contrasts).
-- Summarize each claim in a clear, concise sentence. Keep sentences short and direct—no extra clauses or fluff.
-- Create cloze deletions targeting key terms, distinctions, or causal claims.
-- Use multiple clozes per sentence if helpful (e.g., {{c1::term}} and {{c2::contrast}}).
-- Each cloze should be 1–5 words and stand on its own—do not cloze whole phrases or compound ideas.
-- Avoid orphaning sentences; ensure each cloze deletion is meaningful and complete.
-- Avoid examples, metaphors, quotes, or trivia—focus only on the core reasoning.
-- Each cloze deletion should be a complete thought that can stand alone. Try and combine clozes into a single sentence if they are closely related.
-- Generate approximately one card for every 100 words in the article, dividing roughly evenly between cloze and basic cards.
+Card Format Selection Guidelines:
 
-Basic Cards
-- Extract definitions, statistics, distinctions, or cause-effect relationships the author defines or builds on.
-- Use a simple front–back format: one question, one answer.
-- Keep both the question and answer short and direct.
-- Avoid vague rephrasings, filler, or incidental facts.
-- Generate approximately one card for every 100 words in the article, dividing roughly evenly between cloze and basic cards.
+Use CLOZE format for:
+- Main arguments and key supporting claims where the structure and context matter
+- Conceptual relationships where seeing the full sentence helps understanding
+- Complex ideas that benefit from partial context cues
+- Statements where multiple related terms can be tested together ({{c1::term1}} and {{c2::term2}})
 
-Ambiguity Handling
-- If the argument is implicit, infer it: Why was this written? What is the author trying to convey?
-- If the structure is loose, extract only what is meaningful and intentional.
+Use BASIC format for:
+- Clear definitions where a simple question-answer works best
+- Specific facts, statistics, or data points
+- Direct cause-effect relationships that can be asked simply
+- Terminology where the definition is the focus
 
-Output Format
-- Begin with the line CLOZE, then list all cloze cards.
-- Then write BASIC, and list all basic cards.
+Card Creation Rules:
+- Extract approximately one card for every 150 words in the article
+- Each card should test a unique, distinct concept—avoid redundancy between cloze and basic cards
+- For cloze cards: Keep sentences concise and direct, cloze 1-5 words that are key terms or concepts
+- For basic cards: Use simple, direct questions with clear, short answers
+- Focus on the core reasoning and avoid examples, metaphors, quotes, or trivia
+- If an idea could work as either format, choose the one that makes the concept clearest and most memorable
+
+Content Guidelines:
+- Identify the main argument (central thesis) and key supporting claims
+- Extract meaningful definitions, distinctions, or relationships the author establishes
+- If the argument is implicit, infer the author's main points
+- Focus only on intentional, substantial content
+
+Output Format:
+- Begin with the line CLOZE, then list all cloze cards
+- Then write BASIC, and list all basic cards
 - Format each card using semicolons:
   - Cloze: {{c1::clozed phrase}} ; ;
   - Basic: Question ; Answer ;
@@ -275,10 +286,12 @@ Output Format
         if not client:
             raise RuntimeError("OpenAI client not available. Please set OPENAI_API_KEY environment variable.")
 
-        print(f"Generating cards for \"{self.title}\"...")
+        # Use provided model or fall back to default
+        selected_model = model or MODEL
+        print(f"Generating cards for \"{self.title}\" using model {selected_model}...")
 
         response = client.chat.completions.create(
-            model=MODEL,
+            model=selected_model,
             messages=[
                 {"role": "system", "content": "You generate high-quality Anki cards from articles."},
                 {"role": "user", "content": full_prompt},

@@ -7,11 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-27
+
+### Added
+- `--model` command line argument to specify OpenAI model (default: gpt-4o-mini)
+- Support for using different OpenAI models like gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+- Model parameter propagated to both card generation and fallback text extraction
+
+### Improved
+- Enhanced card generation prompt to intelligently select optimal format (cloze vs basic) for each concept
+- Eliminated redundancy between cloze and basic cards by choosing the best format for each idea
+- Updated package description to reflect intelligent card format selection approach
+- Updated default model from gpt-4.1-mini to gpt-4o-mini for better performance
+
 ## [0.2.1] - 2025-01-27
 
 ### Fixed
 - Fixed --url-files path resolution to work from any directory
-- Fixed tool failing when run from articles/ directory  
+- Fixed tool failing when run from articles/ directory
 - Improved error messages with detailed path search information
 - Enhanced file discovery to check multiple common locations
 

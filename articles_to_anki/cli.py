@@ -224,6 +224,12 @@ def main() -> None:
         metavar="FILE",
         help="Additional text files containing URLs to process (one URL per line, # for comments). Files are searched in current directory, articles/ subdirectory, and parent directories. Can specify multiple files.",
     )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="gpt-4o-mini",
+        help="OpenAI model to use for card generation (default: gpt-4o-mini). Examples: gpt-4o, gpt-4o-mini, gpt-4-turbo, gpt-3.5-turbo.",
+    )
     args = parser.parse_args()
     if not args.to_file:
         check_anki_note_model()
@@ -274,7 +280,7 @@ def main() -> None:
     articles += [Article(file_path=os.path.join(article_dir_path, file)) for file in local_files if file.strip()]
 
     for article in articles:
-        article.fetch_content(use_cache=args.use_cache, skip_if_processed=(not args.process_all))
+        article.fetch_content(use_cache=args.use_cache, skip_if_processed=(not args.process_all), model=args.model)
 
         # Skip already processed articles unless explicitly told to process all
         if article.is_processed and not args.process_all:
@@ -283,7 +289,7 @@ def main() -> None:
 
         cloze_cards, basic_cards = [], []
         if article.text:
-            cloze_cards, basic_cards = article.generate_cards(custom_prompt=args.custom_prompt)
+            cloze_cards, basic_cards = article.generate_cards(custom_prompt=args.custom_prompt, model=args.model)
 
         if not cloze_cards and not basic_cards:
             print(f"No cards generated for \"{article.title or article.identifier}\". Please check the article content or your custom prompt.")

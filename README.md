@@ -1,13 +1,13 @@
 # Articles to Anki
 
-**Articles to Anki** is a Python tool that automates the creation of high-quality Anki flashcards from articles, whether sourced from URLs or local files. Leveraging GPT-4, it generates both cloze and basic cards, and can export them directly to Anki (via AnkiConnect) or to text files for manual import.
+**Articles to Anki** is a Python tool that automates the creation of high-quality Anki flashcards from articles, whether sourced from URLs or local files. Leveraging GPT-4, it intelligently selects the optimal card format (cloze or basic) for each concept to maximize learning effectiveness and avoid redundancy.
 
 ## Features
 
 - **Fetch Articles**: Download and parse articles from URLs or supported local file formats (PDF, EPUB, DOCX, TXT, and more)
 - **Multiple URL Sources**: Process URLs from multiple organized files using `--url-files`
 - **Smart Parsing**: Uses readability and GPT-4 to extract clean article text and titles, even from messy web pages
-- **Intelligent Card Generation**: Automatically generates both cloze and basic Anki cards, focusing on core arguments, definitions, and key facts
+- **Intelligent Card Generation**: Automatically selects the optimal format (cloze or basic) for each concept, focusing on core arguments, definitions, and key facts while avoiding redundancy
 - **Flexible Export**: Send cards directly to Anki via AnkiConnect, or export them as text files for later use
 - **Smart Duplicate Detection**: Identifies semantically similar cards even with different wording, preventing redundant flashcards
 - **Custom Prompts**: Optionally provide your own prompt to customize card generation
@@ -106,16 +106,16 @@ pip install articles-to-anki[all]
 
 ```bash
 # Latest development version
-pip install git+https://github.com/yourusername/articles-to-anki.git
+pip install git+https://github.com/japancolorado/articles-to-anki.git
 
 # With advanced features
-pip install "git+https://github.com/yourusername/articles-to-anki.git#egg=articles-to-anki[advanced_similarity]"
+pip install "git+https://github.com/japancolorado/articles-to-anki.git#egg=articles-to-anki[advanced_similarity]"
 ```
 
 ### Development Installation
 
 ```bash
-git clone https://github.com/yourusername/articles-to-anki.git
+git clone https://github.com/japancolorado/articles-to-anki.git
 cd articles-to-anki
 pip install -e .[dev]
 ```
@@ -159,6 +159,7 @@ articles-to-anki [OPTIONS]
 
 **Options:**
 - `--deck DECKNAME` — Anki deck to export to (default: "Default")
+- `--model MODEL` — OpenAI model to use (default: "gpt-4o-mini"). Examples: gpt-4o, gpt-4-turbo, gpt-3.5-turbo
 - `--url-files FILE [FILE ...]` — Additional URL files to process
 - `--use_cache` — Cache downloaded articles to avoid re-fetching
 - `--to_file` — Export to text files instead of Anki
@@ -173,11 +174,17 @@ articles-to-anki [OPTIONS]
 # Process multiple URL files with custom deck
 articles-to-anki --url-files tech.txt science.txt --deck "Learning"
 
-# Use caching and custom prompt
-articles-to-anki --use_cache --custom_prompt "Focus on practical applications"
+# Use a specific OpenAI model
+articles-to-anki --model gpt-4o --deck "Research"
+
+# Use caching and custom prompt with different model
+articles-to-anki --model gpt-4-turbo --use_cache --custom_prompt "Focus on practical applications"
 
 # Export to files instead of Anki
 articles-to-anki --to_file --url-files priority.txt
+
+# Use cheaper model for large batches
+articles-to-anki --model gpt-3.5-turbo --url-files bulk.txt
 
 # Allow duplicates and process all articles
 articles-to-anki --allow_duplicates --process_all
@@ -197,7 +204,7 @@ articles-to-anki --similarity_threshold 0.75
 
 1. **Article Extraction**: Downloads URLs or reads local files, extracting clean text and titles
 2. **Duplicate Prevention**: Checks if articles have been processed before (unless `--process_all`)
-3. **Card Generation**: Uses GPT-4 to create focused cloze and basic cards from article content
+3. **Card Generation**: Uses GPT-4 to intelligently choose the best card format for each concept from article content
 4. **Smart Filtering**: Detects semantically similar cards to prevent duplicates (unless `--allow_duplicates`)
 5. **Export**: Sends cards to Anki via AnkiConnect or exports to text files
 6. **Record Keeping**: Tracks processed articles to avoid reprocessing
@@ -248,6 +255,21 @@ Edit `articles_to_anki/config.py` to customize:
 - AnkiConnect settings
 - Default similarity thresholds
 
+### Model Selection Guidelines
+
+Choose the right OpenAI model based on your needs:
+
+- **gpt-4o-mini** (default): Best balance of cost and quality for most users
+- **gpt-4o**: Higher quality cards but more expensive, good for critical content
+- **gpt-4-turbo**: Good performance with longer context windows
+- **gpt-3.5-turbo**: Most cost-effective for large batches, slightly lower quality
+
+Use the `--model` parameter to override the default:
+```bash
+articles-to-anki --model gpt-4o --deck "Important Research"
+articles-to-anki --model gpt-3.5-turbo --url-files bulk-processing.txt
+```
+
 ## Development
 
 ### Running Tests
@@ -281,6 +303,6 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/articles-to-anki/issues)
+- **Issues**: [GitHub Issues](https://github.com/japancolorado/articles-to-anki/issues)
 - **Documentation**: This README and inline code documentation
 - **Troubleshooting**: Use `articles-to-anki-fix-nltk` for NLTK issues

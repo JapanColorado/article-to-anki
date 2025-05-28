@@ -7,7 +7,7 @@ CLOZE_MODEL_NAME = "Cloze-Articles-to-Anki"
 BASIC_MODEL_NAME = "Basic-Articles-to-Anki"
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL = "gpt-4.1-mini"
+MODEL = "gpt-4o-mini"
 
 ARTICLE_DIR = "articles"
 URLS_FILE = f"{ARTICLE_DIR}/urls.txt"
