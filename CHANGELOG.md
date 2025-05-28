@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2025-01-27
+
+### Fixed
+- Fixed --url-files path resolution to work from any directory
+- Fixed tool failing when run from articles/ directory  
+- Improved error messages with detailed path search information
+- Enhanced file discovery to check multiple common locations
+
+### Changed
+- Tool now works regardless of current working directory
+- Better help text explaining file path resolution behavior
+
 ## [0.2.0] - 2025-01-27
 
 ### Added

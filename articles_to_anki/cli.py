@@ -18,11 +18,31 @@ def check_config() -> None:
         raise ValueError("OPENAI_API_KEY must be set in the environment variables(or in config.py). Use the following command:\nexport OPENAI_API_KEY='your_api_key'")
 
     # Check if required directories and files exist
-    if not os.path.exists(ARTICLE_DIR) or not os.path.exists(URLS_FILE):
+    # Try to find them in current directory or parent directories
+    article_dir = ARTICLE_DIR
+    urls_file = URLS_FILE
+    
+    # If not found in current directory, check if we're in the articles directory
+    if not os.path.exists(article_dir):
+        if os.path.basename(os.getcwd()) == "articles" and os.path.exists("../articles"):
+            article_dir = "../articles"
+            urls_file = "../articles/urls.txt"
+        elif os.path.exists("../articles"):
+            article_dir = "../articles"
+            urls_file = "../articles/urls.txt"
+    
+    if not os.path.exists(article_dir):
         raise FileNotFoundError(
             f"Required directories or files don't exist. Please run 'articles-to-anki-setup' "
             f"to create the necessary directories and files before using the main command."
         )
+    
+    # Create urls.txt if it doesn't exist
+    if not os.path.exists(urls_file):
+        os.makedirs(os.path.dirname(urls_file), exist_ok=True)
+        with open(urls_file, "w") as f:
+            f.write("# Add your URLs here, one per line.\n")
+        print(f"Created {urls_file}")
 
 def check_anki_note_model() -> None:
     """Checks if the Anki note model exists and creates it if not."""
@@ -122,15 +142,39 @@ def read_urls_from_files(url_files):
     all_urls = []
     
     for file_path in url_files:
-        try:
-            with open(file_path, "r") as f:
-                urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-                all_urls.extend(urls)
-                print(f"Loaded {len(urls)} URLs from {file_path}")
-        except FileNotFoundError:
-            print(f"Warning: URL file '{file_path}' not found. Skipping.")
-        except Exception as e:
-            print(f"Error reading URLs from '{file_path}': {e}. Skipping.")
+        # Try file path as-is first, then relative to current directory
+        paths_to_try = [file_path]
+        
+        # If path is not absolute and doesn't exist, try some common locations
+        if not os.path.isabs(file_path) and not os.path.exists(file_path):
+            # Try in current directory
+            paths_to_try.append(os.path.join(".", file_path))
+            # Try in articles directory
+            paths_to_try.append(os.path.join("articles", file_path))
+            # Try in parent articles directory (if we're in articles/)
+            if os.path.basename(os.getcwd()) == "articles":
+                paths_to_try.append(os.path.join("..", file_path))
+            else:
+                paths_to_try.append(os.path.join("..", "articles", file_path))
+        
+        file_found = False
+        for try_path in paths_to_try:
+            try:
+                if os.path.exists(try_path):
+                    with open(try_path, "r") as f:
+                        urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+                        all_urls.extend(urls)
+                        print(f"Loaded {len(urls)} URLs from {try_path}")
+                    file_found = True
+                    break
+            except Exception as e:
+                continue
+        
+        if not file_found:
+            print(f"Warning: URL file '{file_path}' not found in any of the expected locations:")
+            for path in paths_to_try:
+                print(f"  - {path}")
+            print("Skipping.")
     
     return all_urls
 
@@ -178,7 +222,7 @@ def main() -> None:
         "--url-files",
         nargs="+",
         metavar="FILE",
-        help="Additional text files containing URLs to process (one URL per line, # for comments). Can specify multiple files.",
+        help="Additional text files containing URLs to process (one URL per line, # for comments). Files are searched in current directory, articles/ subdirectory, and parent directories. Can specify multiple files.",
     )
     args = parser.parse_args()
     if not args.to_file:
@@ -187,14 +231,29 @@ def main() -> None:
 
     # Read URLs from the default file
     urls = []
+    
+    # Determine the correct path for the default URLs file
+    urls_file_path = URLS_FILE
+    article_dir_path = ARTICLE_DIR
+    
+    # Check if we need to adjust paths based on current directory
+    if not os.path.exists(ARTICLE_DIR):
+        if os.path.basename(os.getcwd()) == "articles" and os.path.exists("../articles"):
+            article_dir_path = "../articles"
+            urls_file_path = "../articles/urls.txt"
+        elif os.path.exists("../articles"):
+            article_dir_path = "../articles" 
+            urls_file_path = "../articles/urls.txt"
+    
     try:
-        with open(URLS_FILE, "r") as f:
-            urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-            print(f"Loaded {len(urls)} URLs from {URLS_FILE}")
-    except FileNotFoundError:
-        print(f"Default URL file '{URLS_FILE}' not found.")
+        if os.path.exists(urls_file_path):
+            with open(urls_file_path, "r") as f:
+                urls = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+                print(f"Loaded {len(urls)} URLs from {urls_file_path}")
+        else:
+            print(f"Default URL file '{urls_file_path}' not found.")
     except Exception as e:
-        print(f"Error reading default URL file '{URLS_FILE}': {e}")
+        print(f"Error reading default URL file '{urls_file_path}': {e}")
     
     # Read URLs from additional files if specified
     if args.url_files:
@@ -202,15 +261,17 @@ def main() -> None:
         urls.extend(additional_urls)
         print(f"Total URLs loaded: {len(urls)}")
     
-    local_files = [f for f in os.listdir(ARTICLE_DIR) if f.endswith(tuple(ALLOWED_EXTENSIONS)) and not f.startswith(".") and not f == URLS_FILE.split("/")[-1]]
+    local_files = []
+    if os.path.exists(article_dir_path):
+        local_files = [f for f in os.listdir(article_dir_path) if f.endswith(tuple(ALLOWED_EXTENSIONS)) and not f.startswith(".") and not f == os.path.basename(urls_file_path)]
 
     if not urls and not local_files:
-        print(f"No URLs or local files found in {URLS_FILE} or {ARTICLE_DIR}.")
-        print(f"Please add URLs to {URLS_FILE}, specify additional URL files with --url-files, or add article files to {ARTICLE_DIR}, then run the script again.")
+        print(f"No URLs or local files found in {urls_file_path} or {article_dir_path}.")
+        print(f"Please add URLs to {urls_file_path}, specify additional URL files with --url-files, or add article files to {article_dir_path}, then run the script again.")
         return
 
     articles = [Article(url=url) for url in urls if url.strip()]
-    articles += [Article(file_path=os.path.join(ARTICLE_DIR, file)) for file in local_files if file.strip()]
+    articles += [Article(file_path=os.path.join(article_dir_path, file)) for file in local_files if file.strip()]
 
     for article in articles:
         article.fetch_content(use_cache=args.use_cache, skip_if_processed=(not args.process_all))

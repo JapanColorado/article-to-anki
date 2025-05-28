@@ -14,7 +14,7 @@ Features:
 - Custom prompts and flexible configuration
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "japancolorado"
 __email__ = "japancolorado@duck.com"
 __license__ = "MIT"
