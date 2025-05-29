@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-01-29
+
+### Added
+- **Smart File Handling**: New intelligent file export system that prompts users only once when processing multiple articles with `--to-file`
+- Global file handling choice system with three options: overwrite, append, or create timestamped files
+- Enhanced ExportCards API with optional `file_handling_choice` parameter for programmatic control
+
+### Improved
+- **File Export User Experience**: When processing multiple articles with `--to-file`, users are now prompted only once about how to handle existing export files, rather than being prompted for each article
+- The chosen action (overwrite, append, or create timestamped files) is applied consistently to all articles being processed
+- Better separation of concerns between CLI and export logic
+
+### Fixed
+- Resolved "back is possibly unbound" error in card export logic for cloze cards
+- File handling prompts no longer repeat unnecessarily when exporting multiple articles to the same files
+
 ## [1.0.0] - 2025-01-29
 
 ### Added

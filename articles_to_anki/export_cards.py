@@ -3,7 +3,7 @@ import requests
 import json
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from articles_to_anki.config import ANKICONNECT_URL, BASIC_MODEL_NAME, CLOZE_MODEL_NAME, SIMILARITY_THRESHOLD, get_card_database, save_card_database
 from articles_to_anki.text_utils import are_cards_similar
 
@@ -23,7 +23,8 @@ class ExportCards:
     """
 
     def __init__(self, cloze_cards: List[str], basic_cards: List[str], title: str, deck: str, to_file: bool = False,
-                 skip_duplicates: bool = True, similarity_threshold: float = SIMILARITY_THRESHOLD, auto_overwrite: bool = False):
+                 skip_duplicates: bool = True, similarity_threshold: float = SIMILARITY_THRESHOLD, auto_overwrite: bool = False,
+                 file_handling_choice: Optional[str] = None):
         self.cloze_cards = cloze_cards
         self.basic_cards = basic_cards
         self.title = title
@@ -32,6 +33,7 @@ class ExportCards:
         self.skip_duplicates = skip_duplicates
         self.similarity_threshold = similarity_threshold
         self.auto_overwrite = auto_overwrite
+        self.file_handling_choice = file_handling_choice
         self.cards_exported = 0
         self.cards_skipped = 0
         # Load the card database
@@ -308,7 +310,10 @@ class ExportCards:
             files_exist.append(("basic", basic_file))
         
         if files_exist:
-            if self.auto_overwrite:
+            if self.file_handling_choice:
+                choice = self.file_handling_choice
+                # Don't print anything since the choice was already made globally
+            elif self.auto_overwrite:
                 choice = '1'  # Auto-overwrite mode
                 print(f"\nExisting export files found - automatically overwriting:")
                 for file_type, file_path in files_exist:
@@ -372,7 +377,8 @@ class ExportCards:
                         # For processing, parse the card content
                         if is_cloze:
                             front = self._clean_cloze_card(card)
-                            card_content = (front, "")
+                            back = ""
+                            card_content = (front, back)
                         else:
                             front, back = self._clean_basic_card(card)
                             card_content = (front, back)
@@ -400,13 +406,13 @@ class ExportCards:
                                 f.write(f"{front} ;  ; {title_tag}\n")
 
                         # Store the card in our database
-                        front, back = card_content
-                        if front:  # Only store non-empty cards
+                        card_front, card_back = card_content
+                        if card_front:  # Only store non-empty cards
                             card_data = {
                                 "id": str(uuid.uuid4()),
                                 "type": "cloze" if is_cloze else "basic",
-                                "front": front,
-                                "back": back,
+                                "front": card_front,
+                                "back": card_back,
                                 "title": title
                             }
 

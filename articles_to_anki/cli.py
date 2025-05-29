@@ -1,6 +1,7 @@
 import os
 import argparse
 import requests
+from typing import Optional
 from articles_to_anki.config import OPENAI_API_KEY, URLS_FILE, ARTICLE_DIR, ALLOWED_EXTENSIONS, ANKICONNECT_URL, CLOZE_MODEL_NAME, BASIC_MODEL_NAME, SIMILARITY_THRESHOLD
 from articles_to_anki.articles import Article
 from articles_to_anki.export_cards import ExportCards
@@ -43,6 +44,43 @@ def check_config() -> None:
         with open(urls_file, "w") as f:
             f.write("# Add your URLs here, one per line.\n")
         print(f"Created {urls_file}")
+
+def check_existing_export_files_and_get_choice(auto_overwrite: bool) -> Optional[str]:
+    """
+    Check for existing export files and get user's choice on how to handle them.
+    Returns the choice ('1', '2', '3') or None if no existing files found.
+    """
+    os.makedirs("exported_cards", exist_ok=True)
+    
+    cloze_file = "exported_cards/cloze_cards.txt"
+    basic_file = "exported_cards/basic_cards.txt"
+    
+    files_exist = []
+    if os.path.exists(cloze_file):
+        files_exist.append(cloze_file)
+    if os.path.exists(basic_file):
+        files_exist.append(basic_file)
+    
+    if not files_exist:
+        return None  # No existing files
+    
+    if auto_overwrite:
+        print(f"\nExisting export files found - automatically overwriting:")
+        for file_path in files_exist:
+            print(f"  - {file_path}")
+        return '1'  # Auto-overwrite mode
+    
+    print(f"\nExisting export files found:")
+    for file_path in files_exist:
+        print(f"  - {file_path}")
+    
+    while True:
+        choice = input("\nChoose an option:\n1. Overwrite existing files\n2. Create new files with timestamp\n3. Append to existing files\nEnter choice (1/2/3): ").strip()
+        
+        if choice in ['1', '2', '3']:
+            return choice
+        print("Invalid choice. Please enter 1, 2, or 3.")
+
 
 def check_anki_note_model() -> None:
     """Checks if the Anki note model exists and creates it if not."""
@@ -284,6 +322,11 @@ def main() -> None:
     articles = [Article(url=url) for url in urls if url.strip()]
     articles += [Article(file_path=os.path.join(article_dir_path, file)) for file in local_files if file.strip()]
 
+    # Check for existing export files once and get user choice if exporting to file
+    file_handling_choice = None
+    if args.to_file:
+        file_handling_choice = check_existing_export_files_and_get_choice(args.overwrite)
+
     for article in articles:
         article.fetch_content(use_cache=args.use_cache, skip_if_processed=(not args.process_all), model=args.model)
 
@@ -311,6 +354,7 @@ def main() -> None:
             skip_duplicates=(not args.allow_duplicates),
             similarity_threshold=args.similarity_threshold,
             auto_overwrite=args.overwrite,
+            file_handling_choice=file_handling_choice,
         )
         exporter.export()
 

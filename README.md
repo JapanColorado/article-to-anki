@@ -163,6 +163,7 @@ articles-to-anki [OPTIONS]
 - `--url-files FILE [FILE ...]` — Additional URL files to process
 - `--use-cache` — Cache downloaded articles to avoid re-fetching
 - `--to-file` — Export to text files instead of Anki
+- `--overwrite` — Automatically overwrite existing export files without prompting (only applies with --to-file)
 - `--custom-prompt "..."` — Custom instructions for card generation
 - `--allow-duplicates` — Allow duplicate cards to be created
 - `--process-all` — Process all articles, even previously processed ones
@@ -180,8 +181,11 @@ articles-to-anki --model gpt-4o --deck "Research"
 # Use caching and custom prompt with different model
 articles-to-anki --model gpt-4-turbo --use-cache --custom-prompt "Focus on practical applications"
 
-# Export to files instead of Anki
+# Export to files instead of Anki (will prompt for file handling if files exist)
 articles-to-anki --to-file --url-files priority.txt
+
+# Export to files and automatically overwrite existing files
+articles-to-anki --to-file --overwrite --url-files priority.txt
 
 # Use cheaper model for large batches
 articles-to-anki --model gpt-3.5-turbo --url-files bulk.txt
@@ -208,6 +212,20 @@ articles-to-anki --similarity-threshold 0.75
 4. **Smart Filtering**: Detects semantically similar cards to prevent duplicates (unless `--allow_duplicates`)
 5. **Export**: Sends cards to Anki via AnkiConnect or exports to text files
 6. **Record Keeping**: Tracks processed articles to avoid reprocessing
+
+## File Export Behavior
+
+When using `--to-file` to export cards to text files, the tool intelligently handles existing files:
+
+- **First-time export**: Creates `exported_cards/cloze_cards.txt` and `exported_cards/basic_cards.txt`
+- **Existing files found**: Prompts you once with three options:
+  1. **Overwrite** existing files (replaces all content)
+  2. **Create timestamped files** (e.g., `cloze_cards_20250129_143052.txt`)
+  3. **Append** to existing files (adds new cards to the end)
+- **Multiple articles**: Your choice applies to all articles being processed - no repeated prompts
+- **Auto-overwrite**: Use `--overwrite` flag to automatically choose option 1 without prompting
+
+This ensures a smooth experience when processing multiple articles while giving you full control over how files are managed.
 
 ## Troubleshooting
 
