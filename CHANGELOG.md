@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-01-29
+
+### Changed
+- **Major File Handling Redesign**: Completely redesigned file export to use centralized batch approach
+- User is now prompted once at the beginning and ALL cards from the entire command run go into the same files
+- **Overwrite mode**: Deletes existing files and creates new ones with all cards from the batch
+- **Append mode**: Adds all new cards to the end of existing files 
+- **Timestamp mode**: Creates timestamped files once and puts all cards there
+- Eliminated per-article file writing in favor of collecting all cards first, then writing once
+
+### Fixed
+- **Critical Fix**: Resolved timing issue where users were still prompted multiple times when processing multiple articles with `--to-file`
+- No more file fragmentation - all cards from a command run are now organized together
+- Simplified ExportCards class by removing complex file handling logic
+
 ## [1.1.0] - 2025-01-29
 
 ### Added

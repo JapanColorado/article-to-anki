@@ -215,17 +215,17 @@ articles-to-anki --similarity-threshold 0.75
 
 ## File Export Behavior
 
-When using `--to-file` to export cards to text files, the tool intelligently handles existing files:
+When using `--to-file` to export cards to text files, the tool uses a centralized approach:
 
-- **First-time export**: Creates `exported_cards/cloze_cards.txt` and `exported_cards/basic_cards.txt`
-- **Existing files found**: Prompts you once with three options:
-  1. **Overwrite** existing files (replaces all content)
-  2. **Create timestamped files** (e.g., `cloze_cards_20250129_143052.txt`)
-  3. **Append** to existing files (adds new cards to the end)
-- **Multiple articles**: Your choice applies to all articles being processed - no repeated prompts
+- **Single choice**: You're prompted once at the beginning with three options:
+  1. **Overwrite** - Deletes existing files and creates new ones with ALL cards from the command run
+  2. **Create timestamped files** - Creates new files with timestamp (e.g., `cloze_cards_20250129_143052.txt`) containing ALL cards
+  3. **Append** - Adds ALL new cards to the end of existing files
+- **Batch processing**: All cards from all articles processed in the command are collected and written together
+- **No file fragmentation**: Instead of each article writing separately, all cards go into the same files
 - **Auto-overwrite**: Use `--overwrite` flag to automatically choose option 1 without prompting
 
-This ensures a smooth experience when processing multiple articles while giving you full control over how files are managed.
+This approach ensures all cards from a batch run are organized together and eliminates repeated prompting.
 
 ## Troubleshooting
 

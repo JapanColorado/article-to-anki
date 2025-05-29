@@ -23,8 +23,7 @@ class ExportCards:
     """
 
     def __init__(self, cloze_cards: List[str], basic_cards: List[str], title: str, deck: str, to_file: bool = False,
-                 skip_duplicates: bool = True, similarity_threshold: float = SIMILARITY_THRESHOLD, auto_overwrite: bool = False,
-                 file_handling_choice: Optional[str] = None):
+                 skip_duplicates: bool = True, similarity_threshold: float = SIMILARITY_THRESHOLD):
         self.cloze_cards = cloze_cards
         self.basic_cards = basic_cards
         self.title = title
@@ -32,8 +31,6 @@ class ExportCards:
         self.to_file = to_file
         self.skip_duplicates = skip_duplicates
         self.similarity_threshold = similarity_threshold
-        self.auto_overwrite = auto_overwrite
-        self.file_handling_choice = file_handling_choice
         self.cards_exported = 0
         self.cards_skipped = 0
         # Load the card database
@@ -118,7 +115,9 @@ class ExportCards:
                 self._preload_existing_cards()
 
             if self.to_file:
-                self._handle_file_export()
+                # File export is now handled by CLI centrally
+                print("Warning: File export should be handled by CLI, not ExportCards")
+                return
             else:
                 for card in self.cloze_cards:
                     try:
@@ -287,76 +286,7 @@ class ExportCards:
             print(f"Card type: {'Cloze' if is_cloze else 'Basic'}")
             print(f"Card front length: {len(front)} characters")
 
-    def _handle_file_export(self) -> None:
-        """Handles file export with user prompts for existing files."""
-        os.makedirs("exported_cards", exist_ok=True)
-        
-        # Check if we have any cards to export
-        has_cloze = self.cloze_cards and any(card.strip() for card in self.cloze_cards)
-        has_basic = self.basic_cards and any(card.strip() for card in self.basic_cards)
-        
-        if not has_cloze and not has_basic:
-            print("No cards to export.")
-            return
-        
-        # Check for existing files only for card types we're actually exporting
-        cloze_file = "exported_cards/cloze_cards.txt"
-        basic_file = "exported_cards/basic_cards.txt"
-        
-        files_exist = []
-        if has_cloze and os.path.exists(cloze_file):
-            files_exist.append(("cloze", cloze_file))
-        if has_basic and os.path.exists(basic_file):
-            files_exist.append(("basic", basic_file))
-        
-        if files_exist:
-            if self.file_handling_choice:
-                choice = self.file_handling_choice
-                # Don't print anything since the choice was already made globally
-            elif self.auto_overwrite:
-                choice = '1'  # Auto-overwrite mode
-                print(f"\nExisting export files found - automatically overwriting:")
-                for file_type, file_path in files_exist:
-                    print(f"  - {file_path}")
-            else:
-                print(f"\nExisting export files found:")
-                for file_type, file_path in files_exist:
-                    print(f"  - {file_path}")
-                
-                while True:
-                    choice = input("\nChoose an option:\n1. Overwrite existing files\n2. Create new files with timestamp\n3. Append to existing files\nEnter choice (1/2/3): ").strip()
-                    
-                    if choice in ['1', '2', '3']:
-                        break
-                    print("Invalid choice. Please enter 1, 2, or 3.")
-            
-            if choice == '1':
-                # Overwrite mode
-                if has_cloze:
-                    self._export_to_file(self.cloze_cards, self.title, True, cloze_file, 'w')
-                if has_basic:
-                    self._export_to_file(self.basic_cards, self.title, False, basic_file, 'w')
-            elif choice == '2':
-                # New files with timestamp
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                if has_cloze:
-                    new_cloze_file = f"exported_cards/cloze_cards_{timestamp}.txt"
-                    self._export_to_file(self.cloze_cards, self.title, True, new_cloze_file, 'w')
-                if has_basic:
-                    new_basic_file = f"exported_cards/basic_cards_{timestamp}.txt"
-                    self._export_to_file(self.basic_cards, self.title, False, new_basic_file, 'w')
-            else:  # choice == '3'
-                # Append mode
-                if has_cloze:
-                    self._export_to_file(self.cloze_cards, self.title, True, cloze_file, 'a')
-                if has_basic:
-                    self._export_to_file(self.basic_cards, self.title, False, basic_file, 'a')
-        else:
-            # No existing files, create new ones
-            if has_cloze:
-                self._export_to_file(self.cloze_cards, self.title, True, cloze_file, 'w')
-            if has_basic:
-                self._export_to_file(self.basic_cards, self.title, False, basic_file, 'w')
+
 
     def _export_to_file(self, cards: List[str], title: str, is_cloze: bool, file_path: str, mode: str = 'a') -> None:
         """Exports cards to a file in the 'exported_cards' directory."""
@@ -366,7 +296,7 @@ class ExportCards:
             if not non_empty_cards:
                 print(f"No non-empty {'cloze' if is_cloze else 'basic'} cards to export.")
                 return
-                
+
             exported_count = 0
 
             with open(file_path, mode, encoding="utf-8") as f:
@@ -439,25 +369,25 @@ class ExportCards:
         card = card.strip()
         if not card:
             return ""
-        
+
         # Remove title suffix if present (new format: front ; ; title)
         if " ; ; " in card:
             card = card.split(" ; ; ")[0].strip()
         elif " ; ; ; " in card:
             # Handle old format with triple separator
             card = card.split(" ; ; ; ")[0].strip()
-        
+
         # Remove any remaining trailing semicolons and spaces
         card = card.rstrip(" ;")
-        
+
         # Extract only the cloze part before any remaining semicolon
         if " ; " in card:
             card = card.split(" ; ")[0].strip()
-        
+
         # Validate it's actually a cloze card
         if "{{c" not in card or "}}" not in card:
             return ""
-        
+
         return card
 
     def _clean_basic_card(self, card: str) -> tuple[str, str]:
@@ -465,7 +395,7 @@ class ExportCards:
         card = card.strip()
         if not card:
             return "", ""
-        
+
         # Handle new format: front ; back ; title
         parts = card.split(" ; ")
         if len(parts) >= 3:
@@ -479,16 +409,16 @@ class ExportCards:
             # Old format with multiple separators
             parts = card.split(" ; ; ; ")
             card = parts[0].strip()
-        
+
         # Split on the first " ; " to get front and back
         if " ; " in card:
             parts = card.split(" ; ", 1)
             front = parts[0].strip()
             back = parts[1].strip() if len(parts) > 1 else ""
-            
+
             # Remove any trailing semicolons from back
             back = back.rstrip(" ;")
-            
+
             return front, back
         else:
             # No separator found, treat whole thing as front

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "articles-to-anki"
-version = "1.1.0"
+version = "1.1.1"
 description = "A tool to generate Anki flashcards from articles using GPT-4"
 readme = "README.md"
 requires-python = ">=3.9"
