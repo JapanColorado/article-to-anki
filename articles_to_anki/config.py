@@ -27,11 +27,11 @@ if OPENAI_API_KEY:
 
 def get_processed_articles():
     """
-    Returns a dictionary of processed articles with their timestamps and hashes.
+    Returns a dictionary of processed articles with their hashes.
 
     Returns:
         dict: A dictionary with article identifiers (URLs or filenames) as keys,
-              and dictionaries containing 'timestamp', 'title', and 'hash' as values.
+              and dictionaries containing 'title' and 'hash' as values.
     """
     if os.path.exists(PROCESSED_ARTICLES_FILE):
         try:
@@ -54,7 +54,7 @@ def get_card_database():
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
             print(f"Error reading {CARD_DATABASE_FILE}, creating a new one.")
-    return {"cards": [], "metadata": {"version": 1, "last_updated": ""}}
+    return {"cards": [], "metadata": {"version": 1}}
 
 def save_processed_articles(processed_articles):
     """
@@ -76,10 +76,6 @@ def save_card_database(card_database):
     Args:
         card_database (dict): Dictionary containing cards and metadata.
     """
-    # Update last_updated timestamp
-    from datetime import datetime
-    card_database["metadata"]["last_updated"] = datetime.now().isoformat()
-
     try:
         with open(CARD_DATABASE_FILE, 'w') as f:
             json.dump(card_database, f, indent=2)

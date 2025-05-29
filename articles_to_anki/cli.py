@@ -197,6 +197,11 @@ def main() -> None:
         help="Export cards to a file instead of AnkiConnect.",
     )
     parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Automatically overwrite existing export files without prompting (only applies with --to_file).",
+    )
+    parser.add_argument(
         "--custom_prompt",
         type=str,
         default="",
@@ -305,6 +310,7 @@ def main() -> None:
             to_file=args.to_file,
             skip_duplicates=(not args.allow_duplicates),
             similarity_threshold=args.similarity_threshold,
+            auto_overwrite=args.overwrite,
         )
         exporter.export()
 

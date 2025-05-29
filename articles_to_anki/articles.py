@@ -1,6 +1,5 @@
 import hashlib
 import os
-import time
 from typing import Tuple, Optional, List, Dict, Any
 
 import requests
@@ -206,7 +205,6 @@ class Article:
 
         processed_articles = get_processed_articles()
         processed_articles[self.identifier] = {
-            "timestamp": time.time(),
             "title": self.title,
             "hash": self.content_hash,
             "deck": deck
@@ -267,8 +265,10 @@ Output Format:
 - Begin with the line CLOZE, then list all cloze cards
 - Then write BASIC, and list all basic cards
 - Format each card using semicolons:
-  - Cloze: {{c1::clozed phrase}} ; ;
-  - Basic: Question ; Answer ;
+  - Cloze: {{c1::clozed phrase}}
+  - Basic: Question ; Answer
+- Use ONLY the separators shown above - no extra semicolons or spaces
+- IMPORTANT: Replace any semicolons (;) in the original text content with commas (,) to avoid confusion with card format separators
 - Output only the formatted cards. No explanations, preambles, or summaries.
 """
         if custom_prompt:
