@@ -83,7 +83,7 @@ https://example.com/machine-learning-guide
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.9+
 - OpenAI API key
 - Anki with [AnkiConnect](https://foosoft.net/projects/anki-connect/) (for direct export to Anki)
 

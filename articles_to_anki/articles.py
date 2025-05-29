@@ -1,6 +1,6 @@
 import hashlib
 import os
-from typing import Tuple, Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any
 
 import requests
 from bs4 import BeautifulSoup
@@ -211,7 +211,7 @@ class Article:
         }
         save_processed_articles(processed_articles)
 
-    def generate_cards(self, custom_prompt: Optional[str] = None, model: Optional[str] = None) -> Tuple[List[str], List[str]]:
+    def generate_cards(self, custom_prompt: Optional[str] = None, model: Optional[str] = None) -> tuple[List[str], List[str]]:
         """
         Generates Anki flashcards from the article's text using GPT completions.
         For each key concept, the optimal card format (cloze or basic) is chosen
@@ -222,7 +222,7 @@ class Article:
             model (Optional[str]): OpenAI model to use for generation. If None, uses default from config.
 
         Returns:
-            Tuple[List[str], List[str]]: A tuple with a list of cloze cards and a list of basic cards.
+            tuple[List[str], List[str]]: A tuple with a list of cloze cards and a list of basic cards.
         """
         # If the article was already processed, return empty lists
         if self.is_processed:
