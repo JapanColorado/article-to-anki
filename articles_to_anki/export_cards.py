@@ -454,7 +454,7 @@ class ExportCards:
         
         return card
 
-    def _clean_basic_card(self, card: str) -> tuple[str, str]:
+    def _clean_basic_card(self, card: str) -> Tuple[str, str]:
         """Clean up basic cards and extract front and back."""
         card = card.strip()
         if not card:
