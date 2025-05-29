@@ -9,8 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2025-01-29
 
+### Added
+- `--overwrite` flag for automated file export without prompting
+- `--to-file` export with smart file handling (overwrite, append, or create timestamped files)
+- Comprehensive card cleanup system for malformed separators and formatting
+- Automatic removal of title suffixes and redundant content from exported cards
+- OpenAI free credits guide with data sharing instructions
+
 ### Improved
-- Enhanced cloze card generation to create multiple separate cards instead of single cards with many deletions
+- **Major Card Generation Overhaul**: Enhanced cloze card generation to create multiple separate cards instead of single cards with many deletions
 - Limited cloze cards to maximum 1-3 deletions per card for better learning effectiveness
 - Updated prompt with explicit examples showing correct multi-card approach vs incorrect single-card approach
 - Prioritized quality over quantity in card generation - removed rigid word count requirements
@@ -18,6 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added quality threshold guidance focusing on concepts worth remembering weeks later
 - Improved anti-redundancy rules to prevent multiple cards testing the same knowledge
 - Flexible card generation based on content richness rather than fixed ratios
+- Enhanced card generation prompt with semicolon replacement instruction
+- Robust card parsing that handles malformed input gracefully
+- Better export file management with user choice prompts
+- Significantly improved README organization and clarity (26% shorter, better structured)
+- Accurate file organization documentation reflecting actual search behavior
+- Empty card filtering and validation during export
+
+### Fixed
+- Card tagging to use title with underscores for both AnkiConnect and file export
+- Malformed card separators (e.g., `; ; ;`) automatically cleaned up
+- Punctuation conflicts in card content (semicolons replaced with commas)
+- Export files now contain properly formatted cards instead of raw malformed content
+- File export logic properly handles empty card lists
+- Corrected README examples to show actual file location requirements (articles/ directory)
 
 ### Changed
 - **BREAKING**: Changed multi-word CLI flags from underscores to hyphens for consistency:
@@ -30,33 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING**: Dropped Python 3.8 support, now requires Python 3.9+
 - Updated type annotations to use modern syntax (tuple[str, str] instead of Tuple[str, str])
 - Updated README documentation to reflect new hyphenated flag names
-
-## [0.4.0] - 2025-01-29
-
-### Added
-- Fix card tagging to use title with underscores for both AnkiConnect and file export
-- `--overwrite` flag for automated file export without prompting
-- `--to_file` export with smart file handling (overwrite, append, or create timestamped files)
-- Comprehensive card cleanup system for malformed separators and formatting
-- Automatic removal of title suffixes and redundant content from exported cards
-- OpenAI free credits guide with data sharing instructions
-
-### Improved
-- Enhanced card generation prompt with semicolon replacement instruction
-- Robust card parsing that handles malformed input gracefully
-- Better export file management with user choice prompts
-- Significantly improved README organization and clarity (26% shorter, better structured)
-- Accurate file organization documentation reflecting actual search behavior
-- Empty card filtering and validation during export
-
-### Fixed
-- Malformed card separators (e.g., `; ; ;`) automatically cleaned up
-- Punctuation conflicts in card content (semicolons replaced with commas)
-- Export files now contain properly formatted cards instead of raw malformed content
-- File export logic properly handles empty card lists
-- Corrected README examples to show actual file location requirements (articles/ directory)
-
-### Changed
 - Export format is now cleaner with automatic malformed content cleanup
 - File export provides three clear options: overwrite, append, or create new timestamped files
 - Updated documentation to be more concise and better organized
