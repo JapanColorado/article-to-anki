@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Dropped Python 3.8 support, now requires Python 3.9+
+- Updated type annotations to use modern syntax (tuple[str, str] instead of Tuple[str, str])
+
 ## [0.4.0] - 2025-01-29
 
 ### Added

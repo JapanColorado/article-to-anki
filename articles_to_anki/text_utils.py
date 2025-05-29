@@ -2,7 +2,7 @@ import re
 import string
 import os
 import sys
-from typing import List, Tuple, Set, Optional
+from typing import List, Set, Optional
 from collections import Counter
 
 # Define simple English stopwords
@@ -285,7 +285,7 @@ def normalize_cloze_card(cloze_text: str) -> str:
     extracted = extract_cloze_content(cloze_text)
     return normalize_text(extracted)
 
-def normalize_basic_card(front: str, back: str) -> Tuple[str, str]:
+def normalize_basic_card(front: str, back: str) -> tuple[str, str]:
     """
     Normalize a basic card's front and back.
 
@@ -294,18 +294,18 @@ def normalize_basic_card(front: str, back: str) -> Tuple[str, str]:
         back (str): The back (answer) text.
 
     Returns:
-        Tuple[str, str]: Normalized front and back texts.
+        tuple[str, str]: Normalized front and back texts.
     """
     return normalize_text(front), normalize_text(back)
 
-def are_cards_similar(card1: Tuple[str, str], card2: Tuple[str, str],
+def are_cards_similar(card1: tuple[str, str], card2: tuple[str, str],
                      is_cloze: bool, threshold: float = 0.85) -> bool:
     """
     Determine if two cards are semantically similar.
 
     Args:
-        card1 (Tuple[str, str]): First card as (content, "") for cloze or (front, back) for basic.
-        card2 (Tuple[str, str]): Second card as (content, "") for cloze or (front, back) for basic.
+        card1 (tuple[str, str]): First card as (content, "") for cloze or (front, back) for basic.
+        card2 (tuple[str, str]): Second card as (content, "") for cloze or (front, back) for basic.
         is_cloze (bool): Whether these are cloze cards.
         threshold (float): Similarity threshold to consider cards as duplicates.
 

@@ -3,7 +3,7 @@ import requests
 import json
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 from articles_to_anki.config import ANKICONNECT_URL, BASIC_MODEL_NAME, CLOZE_MODEL_NAME, SIMILARITY_THRESHOLD, get_card_database, save_card_database
 from articles_to_anki.text_utils import are_cards_similar
 
@@ -62,12 +62,12 @@ class ExportCards:
 
 
 
-    def _is_duplicate(self, card_content: Tuple[str, str], is_cloze: bool) -> bool:
+    def _is_duplicate(self, card_content: tuple[str, str], is_cloze: bool) -> bool:
         """
         Checks if a card is semantically similar to any existing card.
 
         Args:
-            card_content (Tuple[str, str]): For cloze cards, (text, ""). For basic, (front, back).
+            card_content (tuple[str, str]): For cloze cards, (text, ""). For basic, (front, back).
             is_cloze (bool): Whether this is a cloze card.
 
         Returns:
@@ -454,7 +454,7 @@ class ExportCards:
         
         return card
 
-    def _clean_basic_card(self, card: str) -> Tuple[str, str]:
+    def _clean_basic_card(self, card: str) -> tuple[str, str]:
         """Clean up basic cards and extract front and back."""
         card = card.strip()
         if not card:
