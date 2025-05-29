@@ -159,7 +159,7 @@ articles-to-anki [OPTIONS]
 
 **Options:**
 - `--deck DECKNAME` — Anki deck to export to (default: "Default")
-- `--model MODEL` — OpenAI model to use (default: "gpt-4o-mini"). Examples: gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+- `--model MODEL` — OpenAI model to use (default: "gpt-4o-mini"). Examples: gpt-4o, gpt-4-turbo, gpt-4.1 mini, gpt-4.1
 - `--url-files FILE [FILE ...]` — Additional URL files to process
 - `--use_cache` — Cache downloaded articles to avoid re-fetching
 - `--to_file` — Export to text files instead of Anki
@@ -255,20 +255,14 @@ Edit `articles_to_anki/config.py` to customize:
 - AnkiConnect settings
 - Default similarity thresholds
 
-### Model Selection Guidelines
+## Getting Free OpenAI Credits
 
-Choose the right OpenAI model based on your needs:
+**Share input/outputs with OpenAI and get free credits!**
 
-- **gpt-4o-mini** (default): Best balance of cost and quality for most users
-- **gpt-4o**: Higher quality cards but more expensive, good for critical content
-- **gpt-4-turbo**: Good performance with longer context windows
-- **gpt-3.5-turbo**: Most cost-effective for large batches, slightly lower quality
-
-Use the `--model` parameter to override the default:
-```bash
-articles-to-anki --model gpt-4o --deck "Important Research"
-articles-to-anki --model gpt-3.5-turbo --url-files bulk-processing.txt
-```
+1. **Sign up for OpenAI API**: Visit [platform.openai.com](https://platform.openai.com)
+2. **Enable data sharing**: In your account settings, opt-in to share your API usage data with OpenAI
+3. **Generate project API key**: Use this key in your environment variable `OPENAI_API_KEY`
+4. **Profit**: Enjoy free credits for your Anki card generation enjoyment!
 
 ## Development
 

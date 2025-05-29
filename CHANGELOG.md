@@ -7,11 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-01-29
+
+### Added
+- Fix card tagging to use title with underscores for both AnkiConnect and file export
+- `--overwrite` flag for automated file export without prompting
+- `--to_file` export with smart file handling (overwrite, append, or create timestamped files)
+- Comprehensive card cleanup system for malformed separators and formatting
+- Automatic removal of title suffixes and redundant content from exported cards
+- OpenAI free credits guide with data sharing instructions
+
+### Improved
+- Enhanced card generation prompt with semicolon replacement instruction
+- Robust card parsing that handles malformed input gracefully
+- Better export file management with user choice prompts
+- Significantly improved README organization and clarity (26% shorter, better structured)
+- Accurate file organization documentation reflecting actual search behavior
+- Empty card filtering and validation during export
+
+### Fixed
+- Malformed card separators (e.g., `; ; ;`) automatically cleaned up
+- Punctuation conflicts in card content (semicolons replaced with commas)
+- Export files now contain properly formatted cards instead of raw malformed content
+- File export logic properly handles empty card lists
+- Corrected README examples to show actual file location requirements (articles/ directory)
+
+### Changed
+- Export format is now cleaner with automatic malformed content cleanup
+- File export provides three clear options: overwrite, append, or create new timestamped files
+- Updated documentation to be more concise and better organized
+- Improved model recommendations to include latest GPT-4.1 variants
+
 ## [0.3.0] - 2025-01-27
 
 ### Added
 - `--model` command line argument to specify OpenAI model (default: gpt-4o-mini)
-- Support for using different OpenAI models like gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+- Support for using different OpenAI models like gpt-4o, gpt-4-turbo, gpt-4.1 mini, gpt-4.1
 - Model parameter propagated to both card generation and fallback text extraction
 
 ### Improved
