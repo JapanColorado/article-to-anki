@@ -1,13 +1,13 @@
 # Articles to Anki
 
-**Articles to Anki** is a Python tool that automates the creation of high-quality Anki flashcards from articles, whether sourced from URLs or local files. Leveraging GPT-4, it intelligently selects the optimal card format (cloze or basic) for each concept to maximize learning effectiveness and avoid redundancy.
+**Articles to Anki** is a Python tool that automates the creation of high-quality Anki flashcards from articles, whether sourced from URLs or local files. Leveraging GPT-4, it intelligently generates focused cards that prioritize core concepts over trivial details, automatically selecting the optimal format (cloze or basic) for each concept to maximize learning effectiveness and avoid redundancy.
 
 ## Features
 
 - **Fetch Articles**: Download and parse articles from URLs or supported local file formats (PDF, EPUB, DOCX, TXT, and more)
 - **Multiple URL Sources**: Process URLs from multiple organized files using `--url-files`
 - **Smart Parsing**: Uses readability and GPT-4 to extract clean article text and titles, even from messy web pages
-- **Intelligent Card Generation**: Automatically selects the optimal format (cloze or basic) for each concept, focusing on core arguments, definitions, and key facts while avoiding redundancy
+- **Quality-Focused Card Generation**: Prioritizes meaningful concepts worth remembering long-term, automatically filtering out trivial details, redundant content, and overly specific examples while selecting the optimal format (cloze or basic) for each concept
 - **Flexible Export**: Send cards directly to Anki via AnkiConnect, or export them as text files for later use
 - **Smart Duplicate Detection**: Identifies semantically similar cards even with different wording, preventing redundant flashcards
 - **Custom Prompts**: Optionally provide your own prompt to customize card generation
@@ -46,7 +46,7 @@ articles-to-anki
 articles-to-anki --url-files tech_articles.txt science_articles.txt
 
 # Export to a specific deck with caching:
-articles-to-anki --deck "Learning" --use_cache
+articles-to-anki --deck "Learning" --use-cache
 ```
 
 ## Multiple URL Files
@@ -58,7 +58,7 @@ Organize your articles by topic, priority, or source using multiple URL files:
 articles-to-anki --url-files technology.txt science.txt history.txt
 
 # Combine with other options
-articles-to-anki --url-files priority_articles.txt --deck "High Priority" --use_cache
+articles-to-anki --url-files priority_articles.txt --deck "High Priority" --use-cache
 ```
 
 ### File Organization Examples
@@ -161,12 +161,12 @@ articles-to-anki [OPTIONS]
 - `--deck DECKNAME` — Anki deck to export to (default: "Default")
 - `--model MODEL` — OpenAI model to use (default: "gpt-4o-mini"). Examples: gpt-4o, gpt-4-turbo, gpt-4.1 mini, gpt-4.1
 - `--url-files FILE [FILE ...]` — Additional URL files to process
-- `--use_cache` — Cache downloaded articles to avoid re-fetching
-- `--to_file` — Export to text files instead of Anki
-- `--custom_prompt "..."` — Custom instructions for card generation
-- `--allow_duplicates` — Allow duplicate cards to be created
-- `--process_all` — Process all articles, even previously processed ones
-- `--similarity_threshold 0.85` — Similarity threshold for duplicate detection (0.0-1.0)
+- `--use-cache` — Cache downloaded articles to avoid re-fetching
+- `--to-file` — Export to text files instead of Anki
+- `--custom-prompt "..."` — Custom instructions for card generation
+- `--allow-duplicates` — Allow duplicate cards to be created
+- `--process-all` — Process all articles, even previously processed ones
+- `--similarity-threshold 0.85` — Similarity threshold for duplicate detection (0.0-1.0)
 
 ### Examples
 
@@ -178,19 +178,19 @@ articles-to-anki --url-files tech.txt science.txt --deck "Learning"
 articles-to-anki --model gpt-4o --deck "Research"
 
 # Use caching and custom prompt with different model
-articles-to-anki --model gpt-4-turbo --use_cache --custom_prompt "Focus on practical applications"
+articles-to-anki --model gpt-4-turbo --use-cache --custom-prompt "Focus on practical applications"
 
 # Export to files instead of Anki
-articles-to-anki --to_file --url-files priority.txt
+articles-to-anki --to-file --url-files priority.txt
 
 # Use cheaper model for large batches
 articles-to-anki --model gpt-3.5-turbo --url-files bulk.txt
 
 # Allow duplicates and process all articles
-articles-to-anki --allow_duplicates --process_all
+articles-to-anki --allow-duplicates --process-all
 
 # Adjust duplicate detection sensitivity
-articles-to-anki --similarity_threshold 0.75
+articles-to-anki --similarity-threshold 0.75
 ```
 
 ## Supported File Types
@@ -204,7 +204,7 @@ articles-to-anki --similarity_threshold 0.75
 
 1. **Article Extraction**: Downloads URLs or reads local files, extracting clean text and titles
 2. **Duplicate Prevention**: Checks if articles have been processed before (unless `--process_all`)
-3. **Card Generation**: Uses GPT-4 to intelligently choose the best card format for each concept from article content
+3. **Intelligent Card Generation**: Uses GPT-4 to create focused, high-quality cards by prioritizing core concepts, filtering out trivial details, and choosing the optimal format for each concept
 4. **Smart Filtering**: Detects semantically similar cards to prevent duplicates (unless `--allow_duplicates`)
 5. **Export**: Sends cards to Anki via AnkiConnect or exports to text files
 6. **Record Keeping**: Tracks processed articles to avoid reprocessing
@@ -231,7 +231,7 @@ articles-to-anki-setup --nltk-only
 **AnkiConnect Issues:**
 - Ensure Anki is running with AnkiConnect addon enabled
 - Check that cloze cards have proper `{{c1::text}}` formatting
-- Try exporting to files first: `--to_file`
+- Try exporting to files first: `--to-file`
 
 **NLTK Errors:**
 - Run `articles-to-anki-fix-nltk` for automated fixes

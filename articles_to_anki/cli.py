@@ -187,38 +187,38 @@ def main() -> None:
         help="Name of the Anki deck to export cards to.",
     )
     parser.add_argument(
-        "--use_cache",
+        "--use-cache",
         action="store_true",
         help="Use cached content for URLs to avoid repeated fetching.",
     )
     parser.add_argument(
-        "--to_file",
+        "--to-file",
         action="store_true",
         help="Export cards to a file instead of AnkiConnect.",
     )
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Automatically overwrite existing export files without prompting (only applies with --to_file).",
+        help="Automatically overwrite existing export files without prompting (only applies with --to-file).",
     )
     parser.add_argument(
-        "--custom_prompt",
+        "--custom-prompt",
         type=str,
         default="",
         help="Custom prompt to use for generating cards. If not provided, the default prompt will be used.",
     )
     parser.add_argument(
-        "--allow_duplicates",
+        "--allow-duplicates",
         action="store_true",
         help="Allow duplicate cards to be created even if they already exist.",
     )
     parser.add_argument(
-        "--process_all",
+        "--process-all",
         action="store_true",
         help="Process all articles even if they have been processed before.",
     )
     parser.add_argument(
-        "--similarity_threshold",
+        "--similarity-threshold",
         type=float,
         default=SIMILARITY_THRESHOLD,
         help=f"Threshold for semantic similarity when detecting duplicate cards (0.0-1.0, default: {SIMILARITY_THRESHOLD}).",
@@ -289,7 +289,7 @@ def main() -> None:
 
         # Skip already processed articles unless explicitly told to process all
         if article.is_processed and not args.process_all:
-            print(f"Skipping \"{article.title or article.identifier}\": already processed. Use --process_all to override.")
+            print(f"Skipping \"{article.title or article.identifier}\": already processed. Use --process-all to override.")
             continue
 
         cloze_cards, basic_cards = [], []

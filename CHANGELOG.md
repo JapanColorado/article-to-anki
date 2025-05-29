@@ -7,9 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-01-29
+
+### Improved
+- Enhanced cloze card generation to create multiple separate cards instead of single cards with many deletions
+- Limited cloze cards to maximum 1-3 deletions per card for better learning effectiveness
+- Updated prompt with explicit examples showing correct multi-card approach vs incorrect single-card approach
+- Prioritized quality over quantity in card generation - removed rigid word count requirements
+- Enhanced content filtering to avoid trivial details, specific examples, dates, names, and redundant concepts
+- Added quality threshold guidance focusing on concepts worth remembering weeks later
+- Improved anti-redundancy rules to prevent multiple cards testing the same knowledge
+- Flexible card generation based on content richness rather than fixed ratios
+
 ### Changed
+- **BREAKING**: Changed multi-word CLI flags from underscores to hyphens for consistency:
+  - `--use_cache` → `--use-cache`
+  - `--to_file` → `--to-file`
+  - `--custom_prompt` → `--custom-prompt`
+  - `--allow_duplicates` → `--allow-duplicates`
+  - `--process_all` → `--process-all`
+  - `--similarity_threshold` → `--similarity-threshold`
 - **BREAKING**: Dropped Python 3.8 support, now requires Python 3.9+
 - Updated type annotations to use modern syntax (tuple[str, str] instead of Tuple[str, str])
+- Updated README documentation to reflect new hyphenated flag names
 
 ## [0.4.0] - 2025-01-29
 

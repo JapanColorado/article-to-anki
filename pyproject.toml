@@ -4,28 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "articles-to-anki"
-version = "0.4.0"
+version = "1.0.0"
 description = "A tool to generate Anki flashcards from articles using GPT-4"
 readme = "README.md"
 requires-python = ">=3.9"
-license = {text = "MIT"}
-authors = [
-    {name = "japancolorado", email = "japancolorado@duck.com"}
-]
-maintainers = [
-    {name = "japancolorado", email = "japancolorado@duck.com"}
-]
+license = { text = "MIT" }
+authors = [{ name = "japancolorado", email = "japancolorado@duck.com" }]
+maintainers = [{ name = "japancolorado", email = "japancolorado@duck.com" }]
 keywords = [
-    "anki", 
-    "flashcards", 
-    "gpt", 
-    "articles", 
-    "study", 
+    "anki",
+    "flashcards",
+    "gpt",
+    "articles",
+    "study",
     "spaced-repetition",
     "learning",
     "education",
     "ai",
-    "openai"
+    "openai",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -54,10 +50,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-advanced_similarity = [
-    "scikit-learn>=0.24.0",
-    "nltk>=3.6.0",
-]
+advanced_similarity = ["scikit-learn>=0.24.0", "nltk>=3.6.0"]
 dev = [
     "pytest>=6.0",
     "pytest-cov>=2.10.0",
@@ -68,10 +61,7 @@ dev = [
     "setuptools>=61.0",
     "wheel>=0.37.0",
 ]
-all = [
-    "scikit-learn>=0.24.0",
-    "nltk>=3.6.0",
-]
+all = ["scikit-learn>=0.24.0", "nltk>=3.6.0"]
 
 [project.urls]
 Homepage = "https://github.com/japancolorado/articles-to-anki"
@@ -95,11 +85,7 @@ include = ["articles_to_anki*"]
 exclude = ["tests*", "scripts*", "docs*"]
 
 [tool.setuptools.package-data]
-articles_to_anki = [
-    "*.md",
-    "*.txt",
-    "*.json",
-]
+articles_to_anki = ["*.md", "*.txt", "*.json"]
 
 # Black configuration
 [tool.black]
@@ -126,11 +112,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--verbose",
-]
+addopts = ["--strict-markers", "--strict-config", "--verbose"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
@@ -139,11 +121,7 @@ markers = [
 # Coverage configuration
 [tool.coverage.run]
 source = ["articles_to_anki"]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "setup.py",
-]
+omit = ["*/tests/*", "*/test_*", "setup.py"]
 
 [tool.coverage.report]
 exclude_lines = [

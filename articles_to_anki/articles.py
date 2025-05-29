@@ -239,7 +239,7 @@ Use CLOZE format for:
 - Main arguments and key supporting claims where the structure and context matter
 - Conceptual relationships where seeing the full sentence helps understanding
 - Complex ideas that benefit from partial context cues
-- Statements where multiple related terms can be tested together ({{c1::term1}} and {{c2::term2}})
+- Individual key terms or concepts that benefit from contextual understanding
 
 Use BASIC format for:
 - Clear definitions where a simple question-answer works best
@@ -248,27 +248,58 @@ Use BASIC format for:
 - Terminology where the definition is the focus
 
 Card Creation Rules:
-- Extract approximately one card for every 150 words in the article
+- Prioritize QUALITY over quantity - create only cards that test meaningful, important concepts
+- Generate cards flexibly based on content richness, not a fixed ratio to word count
 - Each card should test a unique, distinct concept—avoid redundancy between cloze and basic cards
-- For cloze cards: Keep sentences concise and direct, cloze 1-5 words that are key terms or concepts
+- For cloze cards: Create SEPARATE cards for each concept, with only 1-3 cloze deletions per card maximum
+- Break down complex sentences into multiple simpler cloze cards if they contain multiple key concepts
+- NEVER create a single cloze card with more than 3 deletions - split into multiple cards instead
+- Each cloze card should focus on one main idea or concept, not multiple unrelated concepts
 - For basic cards: Use simple, direct questions with clear, short answers
-- Focus on the core reasoning and avoid examples, metaphors, quotes, or trivia
+- Focus on the core reasoning, main arguments, and key definitions—AVOID trivial details, specific examples, dates, names, or incidental facts
+- Skip concepts that are too obvious, too specific, or unlikely to be useful for understanding the main ideas
+- Before creating each card, check if you've already covered the same concept in a different way
 - If an idea could work as either format, choose the one that makes the concept clearest and most memorable
 
 Content Guidelines:
-- Identify the main argument (central thesis) and key supporting claims
+- Identify the main argument (central thesis) and key supporting claims - prioritize these heavily
 - Extract meaningful definitions, distinctions, or relationships the author establishes
+- Focus on concepts that would be useful to remember weeks or months later
 - If the argument is implicit, infer the author's main points
-- Focus only on intentional, substantial content
+- Skip minor supporting details, specific examples, anecdotes, or background context unless essential
+- Avoid creating multiple cards that test essentially the same knowledge in different ways
+- It's better to create 3-5 excellent cards than 10+ mediocre or overlapping cards
+- Quality threshold: Each card should test knowledge someone would benefit from remembering weeks later
+- Avoid creating cards for:
+  * Specific examples, anecdotes, or illustrations (unless they ARE the main point)
+  * Dates, names, locations, or other trivia (unless central to the argument)
+  * Quotes or citations (unless the quote itself is a key concept)
+  * Obvious or universally known information
+  * Supporting details that don't contribute to core understanding
+  * Obvious statements or common knowledge
+  * Redundant concepts already covered by other cards
+- Ask yourself: "Does this card test understanding of a key concept that someone should remember?"
 
 Output Format:
 - Begin with the line CLOZE, then list all cloze cards
 - Then write BASIC, and list all basic cards
 - Format each card using semicolons:
-  - Cloze: {{c1::clozed phrase}}
+  - Cloze: {{c1::clozed phrase}} or {{c1::phrase1}} and {{c2::phrase2}} (max 3 deletions)
   - Basic: Question ; Answer
+- Create multiple separate cloze cards rather than one card with many deletions
+- Each line should be one complete card testing one focused concept
 - Use ONLY the separators shown above - no extra semicolons or spaces
 - IMPORTANT: Replace any semicolons (;) in the original text content with commas (,) to avoid confusion with card format separators
+
+Example of CORRECT multi-card approach:
+CLOZE
+{{c1::Traditional Rationality}} is phrased as social rules, with violations interpretable as {{c2::cheating}}.
+To {{c1::Bayesians}}, the brain is an {{c2::engine of accuracy}}.
+The problem of {{c1::Occam's Razor}} suggests that if two hypotheses fit the same observations equally well, why believe the simpler one is more likely to be true?
+
+Example of INCORRECT approach (DON'T DO THIS):
+{{c1::Traditional Rationality}} is phrased as social rules, with violations interpretable as {{c2::cheating}}: if you break the rules and no one else is doing so, you're the first to defect—making you a bad, bad person. To {{c3::Bayesians}}, the brain is an engine of accuracy: if you violate the laws of rationality, the engine doesn't run, and this is equally true whether anyone else breaks the rules or not. The problem of {{c4::Occam's Razor}} suggests that if two hypotheses fit the same observations equally well, why believe the simpler one is more likely to be true?
+
 - Output only the formatted cards. No explanations, preambles, or summaries.
 """
         if custom_prompt:
